@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draft Draft CPBL | 打造你的夢幻球隊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-deep:#0F1A2B;
+    --navy-panel:#16243A;
+    --navy-panel-2:#1C2E48;
+    --grass:#2F6D4F;
+    --grass-bright:#3E8F67;
+    --amber:#F2B705;
+    --amber-dim:#C99A0B;
+    --cream:#EDE6D6;
+    --cream-dim:#B9BFCC;
+    --line:#33455F;
+    --danger:#D9614F;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(242,183,5,0.10), transparent 60%),
+      linear-gradient(180deg, var(--navy-deep), #0A1220 100%);
+    color:var(--cream);
+    font-family:'Noto Sans TC', sans-serif;
+    min-height:100vh;
+    padding-bottom:60px;
+  }
+  .num, .big-num{
+    font-family:'Teko','Noto Sans TC',sans-serif;
+    letter-spacing:0.02em;
+  }
+  header{
+    text-align:center;
+    padding:36px 20px 20px;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'Teko',sans-serif;
+    font-size:16px;
+    letter-spacing:0.35em;
+    color:var(--amber);
+    font-weight:600;
+    text-transform:uppercase;
+  }
+  h1{
+    font-family:'Teko',sans-serif;
+    font-size:56px;
+    font-weight:700;
+    margin:6px 0 4px;
+    letter-spacing:0.02em;
+    color:var(--cream);
+    text-shadow:0 0 24px rgba(242,183,5,0.18);
+  }
+  .subtitle{
+    color:var(--cream-dim);
+    font-size:14px;
+    max-width:480px;
+    margin:0 auto;
+    line-height:1.6;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 16px;}
+
+  .panel{
+    background:linear-gradient(180deg, var(--navy-panel), var(--navy-panel-2));
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px;
+    margin-top:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .panel-title{
+    display:flex;align-items:center;gap:10px;
+    font-family:'Teko',sans-serif;
+    font-size:22px;
+    letter-spacing:0.08em;
+    color:var(--amber);
+    margin-bottom:14px;
+    text-transform:uppercase;
+  }
+  .panel-title .dot{width:8px;height:8px;border-radius:50%;background:var(--amber);box-shadow:0 0 10px var(--amber);}
+
+  /* --- Scoreboard reels --- */
+  .board{
+    background:#0A1526;
+    border:2px solid var(--line);
+    border-radius:10px;
+    padding:20px;
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .reel{
+    flex:1 1 220px;
+    max-width:320px;
+    background:linear-gradient(180deg,#0D1A2E,#08111F);
+    border:1px solid var(--line);
+    border-radius:8px;
+    height:110px;
+    overflow:hidden;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .reel::before, .reel::after{
+    content:'';position:absolute;left:0;right:0;height:36px;pointer-events:none;
+  }
+  .reel::before{top:0;background:linear-gradient(180deg, rgba(10,17,31,0.95), transparent);}
+  .reel::after{bottom:0;background:linear-gradient(0deg, rgba(10,17,31,0.95), transparent);}
+  .reel-label{
+    position:absolute;top:6px;left:10px;
+    font-size:11px;letter-spacing:0.2em;color:var(--cream-dim);
+    text-transform:uppercase;
+    z-index:2;
+  }
+  .reel-value{
+    font-family:'Teko',sans-serif;
+    font-weight:700;
+    font-size:34px;
+    color:var(--cream);
+    text-align:center;
+    padding:0 8px;
+    line-height:1.1;
+    transition:transform 0.08s linear;
+  }
+  .reel.spinning .reel-value{color:var(--amber);}
+  .reel-year .reel-value{font-size:44px;}
+
+  .controls-row{
+    display:flex;gap:14px;align-items:center;flex-wrap:wrap;
+    margin-top:18px;justify-content:center;
+  }
+  button{
+    font-family:'Noto Sans TC',sans-serif;
+    font-weight:700;
+    border:none;border-radius:999px;
+    padding:14px 30px;
+    font-size:15px;
+    cursor:pointer;
+    transition:transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+  }
+  button:active{transform:scale(0.97);}
+  button:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-spin{
+    background:linear-gradient(180deg, var(--amber), var(--amber-dim));
+    color:#1A1200;
+    box-shadow:0 6px 18px rgba(242,183,5,0.35);
+    font-size:17px;
+    padding:16px 40px;
+  }
+  .btn-spin:hover:not(:disabled){box-shadow:0 8px 22px rgba(242,183,5,0.5);}
+  .btn-ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--cream-dim);
+  }
+  .btn-ghost:hover{border-color:var(--amber-dim);color:var(--cream);}
+  .btn-danger{
+    background:transparent;border:1px solid rgba(217,97,79,0.5);color:var(--danger);
+  }
+
+  .filters{
+    display:flex;gap:20px;flex-wrap:wrap;justify-content:center;
+    margin-top:16px;font-size:13px;color:var(--cream-dim);
+  }
+  .filters label{display:flex;align-items:center;gap:8px;}
+  .filters input[type=range]{accent-color:var(--amber);}
+  .filters select{
+    background:var(--navy-deep);color:var(--cream);border:1px solid var(--line);
+    border-radius:6px;padding:4px 8px;font-family:inherit;
+  }
+  .toggle{display:flex;align-items:center;gap:8px;}
+  .toggle input{accent-color:var(--grass-bright);width:16px;height:16px;}
+
+  .status-line{
+    text-align:center;margin-top:12px;font-size:13px;color:var(--cream-dim);
+    min-height:20px;
+  }
+  .status-line b{color:var(--amber);}
+
+  /* --- Candidate list --- */
+  .candidates{
+    margin-top:18px;
+    display:flex;flex-direction:column;gap:8px;
+    max-height:300px;overflow-y:auto;
+    padding-right:4px;
+  }
+  .candidates::-webkit-scrollbar{width:6px;}
+  .candidates::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px;}
+  .empty-hint{
+    text-align:center;color:var(--cream-dim);padding:30px 10px;font-size:14px;line-height:1.8;
+  }
+  .cand-card{
+    display:flex;align-items:center;gap:14px;
+    background:var(--navy-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px 16px;
+  }
+  .cand-pick{
+    font-family:'Teko',sans-serif;font-size:26px;color:var(--amber);
+    min-width:38px;text-align:center;
+  }
+  .cand-info{flex:1;}
+  .cand-name{font-weight:700;font-size:16px;}
+  .cand-meta{font-size:12px;color:var(--cream-dim);margin-top:2px;}
+  .cand-add{
+    background:var(--grass-bright);color:#08150E;
+    padding:8px 18px;font-size:13px;border-radius:8px;
+  }
+  .cand-add:disabled{background:var(--line);color:var(--cream-dim);}
+
+  /* --- Roster --- */
+  .roster-head{
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;
+  }
+  .roster-count{font-family:'Teko',sans-serif;font-size:20px;color:var(--cream-dim);}
+  .roster-count b{color:var(--amber);font-size:26px;}
+  .roster-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:10px;
+    margin-top:16px;
+  }
+  .roster-card{
+    background:linear-gradient(160deg, var(--navy-deep), #0A1526);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:12px;
+    position:relative;
+  }
+  .roster-card .yr{
+    font-family:'Teko',sans-serif;color:var(--amber-dim);font-size:13px;letter-spacing:0.05em;
+  }
+  .roster-card .nm{font-weight:700;font-size:15px;margin:2px 0 4px;}
+  .roster-card .tm{font-size:11px;color:var(--cream-dim);}
+  .roster-card .rm{
+    position:absolute;top:8px;right:8px;
+    background:transparent;border:none;color:var(--cream-dim);
+    font-size:16px;cursor:pointer;padding:2px 6px;
+  }
+  .roster-card .rm:hover{color:var(--danger);}
+  .roster-empty{
+    text-align:center;color:var(--cream-dim);padding:40px 10px;font-size:14px;
+    border:1px dashed var(--line);border-radius:10px;
+  }
+  .roster-cap-note{
+    margin-top:14px;font-size:12.5px;color:var(--cream-dim);text-align:center;
+  }
+  .roster-cap-note.full{color:var(--amber);}
+
+  /* --- Lineup card --- */
+  .lineup-groups{display:flex;flex-direction:column;gap:20px;}
+  .lineup-group-title{
+    font-family:'Teko',sans-serif;font-size:16px;letter-spacing:0.15em;
+    color:var(--cream-dim);text-transform:uppercase;margin-bottom:8px;
+    display:flex;align-items:center;gap:8px;
+  }
+  .lineup-group-title .tag{
+    background:var(--navy-deep);border:1px solid var(--line);border-radius:5px;
+    padding:2px 8px;font-size:11px;letter-spacing:0.05em;color:var(--amber-dim);
+  }
+  .lineup-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px,1fr));
+    gap:10px;
+  }
+  .slot{
+    background:var(--navy-deep);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 12px;
+  }
+  .slot.filled{border-color:var(--grass-bright);}
+  .slot-label{
+    font-family:'Teko',sans-serif;font-size:13px;letter-spacing:0.08em;
+    color:var(--amber-dim);margin-bottom:6px;
+  }
+  .slot select{
+    width:100%;background:transparent;color:var(--cream);
+    border:none;border-bottom:1px solid var(--line);
+    font-family:'Noto Sans TC',sans-serif;font-size:14px;font-weight:700;
+    padding:4px 0;
+  }
+  .slot select:focus{outline:none;border-bottom-color:var(--amber);}
+  .slot select option{background:var(--navy-panel);color:var(--cream);}
+  .unassigned-note{
+    margin-top:16px;font-size:12.5px;color:var(--cream-dim);text-align:center;
+  }
+  .unassigned-note b{color:var(--amber);}
+
+  /* --- Pass row + assignment form (inside candidates panel) --- */
+  .pass-row{
+    display:flex;justify-content:center;margin-top:6px;padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .assign-form{
+    background:var(--navy-deep);
+    border:1px solid var(--amber-dim);
+    border-radius:10px;
+    padding:16px;
+  }
+  .assign-title{font-size:14px;margin-bottom:12px;line-height:1.6;}
+  .assign-title b{color:var(--amber);}
+  .assign-groups{
+    display:flex;flex-wrap:wrap;gap:8px;
+  }
+  .assign-group-btn{
+    background:transparent;border:1px solid var(--line);color:var(--cream-dim);
+    border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;
+  }
+  .assign-group-btn.active{
+    border-color:var(--amber);color:var(--amber);background:rgba(242,183,5,0.08);
+  }
+  .assign-detail{margin-top:14px;display:flex;flex-direction:column;gap:12px;}
+  .assign-subrow{display:flex;align-items:center;gap:10px;}
+  .assign-sublabel{
+    font-family:'Teko',sans-serif;font-size:14px;letter-spacing:0.08em;
+    color:var(--cream-dim);min-width:70px;
+  }
+  .assign-subrow select{
+    flex:1;background:var(--navy-panel);color:var(--cream);
+    border:1px solid var(--line);border-radius:6px;padding:8px 10px;
+    font-family:'Noto Sans TC',sans-serif;font-size:14px;
+  }
+  .assign-actions{margin-top:12px;display:flex;justify-content:flex-end;}
+
+  /* --- New: panel title row with remaining count --- */
+  .panel-title-row{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .panel-title-row .panel-title{margin-bottom:0;}
+  .remain-note{font-size:12.5px;color:var(--cream-dim);}
+  .remain-note b{color:var(--amber);font-family:'Teko',sans-serif;font-size:16px;}
+
+  /* --- Result card --- */
+  .result-card{
+    margin-top:16px;
+    background:var(--navy-deep);
+    border-left:4px solid var(--amber);
+    border-radius:8px;
+    padding:14px 16px;
+  }
+  .result-eyebrow{
+    font-family:'Teko',sans-serif;font-size:13px;letter-spacing:0.2em;
+    color:var(--amber-dim);text-transform:uppercase;
+  }
+  .result-title{font-size:19px;font-weight:700;margin:4px 0 6px;}
+  .result-hint{font-size:12.5px;color:var(--cream-dim);}
+
+  .filters-lock-note{
+    text-align:center;font-size:11px;color:var(--cream-dim);margin-top:8px;opacity:0.75;
+  }
+  .ref-links{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .ref-link{
+    display:inline-block;background:var(--navy-deep);border:1px solid var(--line);
+    color:var(--cream-dim);font-size:12.5px;font-weight:700;
+    padding:8px 16px;border-radius:8px;text-decoration:none;
+  }
+  .ref-link:hover{border-color:var(--amber-dim);color:var(--cream);}
+  .btn-danger-armed{
+    border-color:var(--danger) !important;color:var(--danger) !important;
+    background:rgba(217,97,79,0.1) !important;
+  }
+  .filters input[type=number]{
+    width:60px;background:var(--navy-deep);color:var(--cream);border:1px solid var(--line);
+    border-radius:6px;padding:4px 8px;font-family:inherit;
+  }
+
+  /* --- Candidate table --- */
+  .cand-table-wrap{max-height:320px;overflow-y:auto;border:1px solid var(--line);border-radius:10px;}
+  .cand-table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  .cand-table thead th{
+    position:sticky;top:0;background:var(--navy-panel-2);
+    text-align:left;padding:10px 12px;font-family:'Teko',sans-serif;
+    letter-spacing:0.08em;color:var(--amber-dim);font-size:13px;
+    border-bottom:1px solid var(--line);
+  }
+  .cand-table tbody td{
+    padding:9px 12px;border-bottom:1px solid var(--line);color:var(--cream);
+  }
+  .cand-table tbody tr{cursor:pointer;transition:background 0.1s;}
+  .cand-table tbody tr:hover{background:rgba(242,183,5,0.06);}
+  .cand-table tbody tr.selected{background:rgba(242,183,5,0.14);}
+  .cand-table tbody tr.used{opacity:0.4;cursor:not-allowed;}
+  .cand-table .pick-num{font-family:'Teko',sans-serif;color:var(--amber);font-size:16px;}
+  .cand-table .used-tag{font-size:11px;color:var(--grass-bright);}
+  .cand-table .pick-btn{
+    background:var(--grass-bright);color:#08150E;border:none;border-radius:6px;
+    padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;
+  }
+  .cand-table .pick-btn:disabled{background:var(--line);color:var(--cream-dim);cursor:not-allowed;}
+
+  /* --- Assign bar --- */
+  .assign-bar{
+    margin-top:16px;background:var(--navy-deep);border:1px solid var(--amber-dim);
+    border-radius:10px;padding:16px;
+  }
+  .assign-row{margin-bottom:12px;}
+  .assign-row:last-child{margin-bottom:0;}
+  .assign-row.two-col{display:flex;gap:14px;}
+  .assign-field{flex:1;display:flex;flex-direction:column;gap:6px;}
+  .assign-field label{
+    font-family:'Teko',sans-serif;font-size:13px;letter-spacing:0.08em;color:var(--cream-dim);
+  }
+  .assign-static{
+    font-weight:700;font-size:16px;color:var(--amber);
+    padding:8px 0;border-bottom:1px solid var(--line);
+  }
+  .assign-field select{
+    background:var(--navy-panel);color:var(--cream);border:1px solid var(--line);
+    border-radius:6px;padding:9px 10px;font-family:'Noto Sans TC',sans-serif;font-size:14px;
+  }
+  .assign-field select:disabled{opacity:0.4;}
+  .buttons-row{display:flex;gap:10px;flex-wrap:wrap;}
+  .buttons-row .btn-spin{flex:1;min-width:140px;padding:12px 20px;font-size:14px;}
+  .btn-danger-outline{
+    background:transparent;border:1px solid rgba(217,97,79,0.5);color:var(--danger);
+    padding:12px 20px;font-size:14px;border-radius:999px;font-weight:700;
+  }
+  .btn-danger-outline:disabled{opacity:0.35;cursor:not-allowed;}
+  .already-used-note{margin-top:12px;font-size:12.5px;color:var(--grass-bright);text-align:center;}
+
+  /* --- Progress bar --- */
+  .progress-bar{
+    height:6px;background:var(--navy-deep);border-radius:3px;overflow:hidden;margin-bottom:16px;
+  }
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));width:0%;transition:width 0.3s ease;}
+
+  /* --- Compact lineup rows --- */
+  .lineup-compact{display:flex;flex-direction:column;gap:2px;}
+  .lc-section-title{
+    font-family:'Teko',sans-serif;font-size:14px;letter-spacing:0.15em;color:var(--cream-dim);
+    text-transform:uppercase;margin:16px 0 6px;
+  }
+  .lc-section-title:first-child{margin-top:0;}
+  .lc-row{
+    display:flex;align-items:center;gap:10px;
+    padding:9px 10px;border-radius:8px;
+  }
+  .lc-row.filled{background:var(--navy-deep);}
+  .lc-num{
+    font-family:'Teko',sans-serif;font-size:16px;color:var(--amber);min-width:22px;text-align:center;
+  }
+  .lc-badge{
+    display:flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:6px;
+    background:var(--navy-panel-2);border:1px solid var(--line);
+    font-size:12px;font-weight:700;color:var(--cream-dim);flex-shrink:0;
+  }
+  .lc-row.filled .lc-badge{border-color:var(--grass-bright);color:var(--grass-bright);}
+  .lc-name{flex:1;font-size:14px;}
+  .lc-name.placeholder{color:var(--cream-dim);font-size:13px;}
+  .lc-origin{
+    font-size:11px;color:#fff;
+    border-radius:5px;padding:2px 7px;white-space:nowrap;font-weight:700;
+    border:1px solid rgba(255,255,255,0.25);
+  }
+  .lc-remove{background:transparent;border:none;color:var(--cream-dim);font-size:15px;cursor:pointer;padding:2px 4px;}
+  .lc-remove:hover{color:var(--danger);}
+
+  /* --- History list --- */
+  .history-list{display:flex;flex-direction:column;gap:6px;max-height:280px;overflow-y:auto;}
+  .history-item{
+    display:flex;align-items:center;gap:10px;
+    background:var(--navy-deep);border:1px solid var(--line);border-radius:8px;
+    padding:9px 12px;font-size:13px;
+  }
+  .history-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;background:var(--amber);}
+  .history-dot.pass{background:var(--cream-dim);}
+  .history-team{color:var(--cream-dim);font-size:12px;}
+  .history-result{flex:1;font-weight:700;}
+  .history-result.pass{color:var(--cream-dim);font-weight:400;font-style:italic;}
+
+  /* --- Team name input --- */
+  .team-name-input{
+    width:100%;background:var(--navy-deep);color:var(--cream);
+    border:1px solid var(--line);border-radius:8px;padding:11px 14px;
+    font-family:'Noto Sans TC',sans-serif;font-size:14px;margin-bottom:16px;
+  }
+  .team-name-input:focus{outline:none;border-color:var(--amber-dim);}
+  .team-name-input::placeholder{color:var(--cream-dim);}
+
+  /* --- Image export modal --- */
+  .image-modal{
+    position:fixed;inset:0;background:rgba(5,9,16,0.92);
+    z-index:1000;display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .image-modal-inner{
+    max-width:480px;width:100%;max-height:92vh;display:flex;flex-direction:column;gap:14px;
+  }
+  .image-modal-hint{color:var(--cream-dim);font-size:12.5px;text-align:center;}
+  .image-modal-canvas-wrap{
+    flex:1;min-height:0;overflow-y:auto;border:1px solid var(--line);border-radius:10px;background:var(--navy-deep);
+  }
+  .image-modal-canvas-wrap img{width:100%;display:block;}
+  .image-modal-actions{display:flex;gap:10px;justify-content:center;}
+  .image-modal-actions .btn-spin{padding:12px 24px;font-size:14px;}
+
+  .export-row{
+    display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap;
+  }
+  textarea#exportBox{
+    width:100%;min-height:140px;margin-top:14px;
+    background:var(--navy-deep);color:var(--cream);
+    border:1px solid var(--line);border-radius:8px;
+    font-family:monospace;font-size:12.5px;padding:12px;
+    display:none;white-space:pre;resize:vertical;
+  }
+
+  footer{
+    text-align:center;color:var(--cream-dim);font-size:11.5px;
+    margin-top:34px;line-height:1.8;padding:0 20px;
+  }
+  footer a{color:var(--amber-dim);}
+
+  @media (max-width:520px){
+    h1{font-size:40px;}
+    .reel{height:90px;}
+    .reel-value{font-size:26px;}
+    .reel-year .reel-value{font-size:34px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;animation:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">打造你的中華職棒明星球隊！</div>
+  <h1>Draft Draft CPBL</h1>
+  <p class="subtitle">轉出「球團 × 年度」，從那年真實的選秀名冊挑一位球員，立刻安排棒次／守備位置或投手角色，每次轉出都必須選人。</p>
+</header>
+
+<div class="wrap">
+
+  <div class="panel">
+    <div class="panel-title-row">
+      <div class="panel-title"><span class="dot"></span>選秀輪盤</div>
+      <div class="remain-note">剩餘組合：<b id="remainCount">0</b></div>
+    </div>
+
+    <div class="board">
+      <div class="reel reel-team" id="reelTeam">
+        <div class="reel-label">球團</div>
+        <div class="reel-value" id="reelTeamValue">？？？</div>
+      </div>
+      <div class="reel reel-year" id="reelYear">
+        <div class="reel-label">年度</div>
+        <div class="reel-value" id="reelYearValue">20??</div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <button class="btn-spin" id="spinBtn">轉動輪盤</button>
+    </div>
+
+    <div class="filters">
+      <label>年度範圍
+        <select id="yearMin"></select> ～ <select id="yearMax"></select>
+      </label>
+      <label class="toggle">
+        <input type="checkbox" id="noRepeat" checked>
+        同一「球團×年度」不重複出現
+      </label>
+      <label>PASS 上限
+        <input type="number" id="passMaxInput" min="0" max="20" value="3">
+      </label>
+    </div>
+    <div class="filters-lock-note">＊以上設定僅能在轉動第一次輪盤前調整，遊戲開始後將鎖定，需按「重置全部」才能修改。</div>
+
+    <div class="result-card" id="resultCard" style="display:none;">
+      <div class="result-eyebrow">指名年度確定</div>
+      <div class="result-title" id="resultTitle"></div>
+      <div class="result-hint" id="resultHint">從下方名冊選一位球員，或使用 PASS 跳過。</div>
+    </div>
+
+    <div class="status-line" id="statusLine">還沒轉過輪盤，按下「轉動輪盤」開始吧。</div>
+  </div>
+
+  <div class="panel" id="draftPanel" style="display:none;">
+    <div class="panel-title"><span class="dot"></span><span id="draftPanelTitle">選秀名冊</span></div>
+
+    <div class="ref-links">
+      <a href="#" id="wikiLink" target="_blank" rel="noopener" class="ref-link">台灣棒球維基館 ↗</a>
+      <a href="#" id="googleLink" target="_blank" rel="noopener" class="ref-link">Google搜尋 ↗</a>
+    </div>
+
+    <div class="cand-table-wrap">
+      <table class="cand-table">
+        <thead>
+          <tr><th>順位</th><th>選手名</th><th>類型</th><th></th></tr>
+        </thead>
+        <tbody id="candTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="assign-bar" id="assignBar">
+      <div class="assign-row">
+        <div class="assign-field">
+          <label>選手名</label>
+          <div class="assign-static" id="pickedName">— 請先在上方名冊點選一位 —</div>
+        </div>
+      </div>
+      <div class="assign-row two-col">
+        <div class="assign-field">
+          <label>守備 / 角色</label>
+          <select id="roleSelect">
+            <option value="">選擇角色</option>
+          </select>
+        </div>
+        <div class="assign-field">
+          <label>棒次</label>
+          <select id="orderSelect" disabled>
+            <option value="">—</option>
+          </select>
+        </div>
+      </div>
+      <div class="assign-row buttons-row">
+        <button class="btn-spin" id="addBtn" disabled>加入球隊</button>
+        <button class="btn-danger-outline" id="passBtn">PASS（剩餘 <span id="passLeftLabel">3</span> 次）</button>
+      </div>
+    </div>
+
+    <div class="already-used-note" id="alreadyUsedNote" style="display:none;"></div>
+  </div>
+
+  <div class="panel">
+    <div class="roster-head">
+      <div class="panel-title" style="margin-bottom:0;"><span class="dot"></span>我的夢幻球隊</div>
+      <div class="roster-count"><b id="rosterCount">0</b> / 17</div>
+    </div>
+
+    <input type="text" id="teamNameInput" class="team-name-input" placeholder="輸入隊伍名稱（輸出圖片會用到）" maxlength="20">
+
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="lineup-compact" id="lineupCompact"></div>
+
+    <div class="export-row">
+      <button class="btn-spin" id="exportImageBtn" style="padding:10px 22px;font-size:13px;">📷 輸出為圖片</button>
+      <button class="btn-ghost" id="resetTeamBtn">重置全部（重新開始）</button>
+    </div>
+  </div>
+
+  <div class="image-modal" id="imageModal" style="display:none;">
+    <div class="image-modal-inner">
+      <div class="image-modal-hint">長按圖片即可儲存到相簿；電腦版可點下方按鈕下載。</div>
+      <div class="image-modal-canvas-wrap"><img id="shareImagePreview" alt="打線卡圖片"></div>
+      <div class="image-modal-actions">
+        <a id="downloadImageLink" class="btn-spin" download="cpbl_lineup.png" style="text-decoration:none;display:inline-block;">下載圖片</a>
+        <button class="btn-ghost" id="closeImageModal">關閉</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title"><span class="dot"></span>轉盤紀錄</div>
+    <div class="history-list" id="historyList">
+      <div class="empty-hint">還沒有任何紀錄。</div>
+    </div>
+  </div>
+
+  <footer>
+    Draft Draft CPBL 為非官方粉絲自製網頁，致敬「ドラフト×ドラフト メーカー」（draft-draft.vercel.app／NPB DRAFT ROULETTE）；該網頁靈感則來自 YouTube「日ハムファンが語る。」頻道的「ドラフト×ドラフト」企劃。<br>
+    選秀資料範圍 1990–2026（不含1995、1997–1999，該三年改採特考／入團測試無選秀會；不含擴編選秀、洋將選秀），整理自中華職棒歷年選秀資料。實際指名內容請以官方公告為準。
+  </footer>
+</div>
+
+<script>
+
+const DRAFT_DATA = [{"year": 1990, "type": "入選名單", "round": 1, "team": "兄弟象", "player": "林文城", "pick": 1}, {"year": 1990, "type": "入選名單", "round": 1, "team": "三商虎", "player": "陳明德", "pick": 2}, {"year": 1990, "type": "入選名單", "round": 1, "team": "統一獅", "player": "謝長亨", "pick": 3}, {"year": 1990, "type": "入選名單", "round": 1, "team": "味全龍", "player": "陽介仁", "pick": 4}, {"year": 1990, "type": "入選名單", "round": 2, "team": "兄弟象", "player": "吳復連", "pick": 5}, {"year": 1990, "type": "入選名單", "round": 2, "team": "味全龍", "player": "蔡生豐", "pick": 6}, {"year": 1991, "type": "季中新人選秀", "round": 1, "team": "兄弟象", "player": "陳仁安", "pick": 1}, {"year": 1991, "type": "季中新人選秀", "round": 2, "team": "兄弟象", "player": "賴建男", "pick": 2}, {"year": 1992, "type": "季前新人選秀", "round": 1, "team": "兄弟象", "player": "呂明賜", "pick": 1}, {"year": 1992, "type": "季後新人選秀", "round": 1, "team": "味全龍", "player": "陳大順", "pick": 1}, {"year": 1992, "type": "季後新人選秀", "round": 2, "team": "味全龍", "player": "林俊賢", "pick": 2}, {"year": 1993, "type": "入選名單", "round": 1, "team": "三商虎", "player": "童琮輝", "pick": 1}, {"year": 1993, "type": "入選名單", "round": 1, "team": "時報鷹", "player": "謝奇勳", "pick": 2}, {"year": 1993, "type": "入選名單", "round": 1, "team": "俊國熊", "player": "黃杉楹", "pick": 3}, {"year": 1993, "type": "入選名單", "round": 1, "team": "味全龍", "player": "涂鵬斐", "pick": 4}, {"year": 1993, "type": "入選名單", "round": 1, "team": "統一獅", "player": "黃富照", "pick": 5}, {"year": 1994, "type": "入選名單", "round": 1, "team": "俊國熊", "player": "張協進", "pick": 1}, {"year": 1994, "type": "入選名單", "round": 1, "team": "味全龍", "player": "廖述仁", "pick": 2}, {"year": 1994, "type": "入選名單", "round": 1, "team": "三商虎", "player": "周德賢", "pick": 3}, {"year": 1994, "type": "入選名單", "round": 1, "team": "兄弟象", "player": "董永興", "pick": 4}, {"year": 1996, "type": "入選名單", "round": 1, "team": "味全龍", "player": "洪佩臻", "pick": 1}, {"year": 1996, "type": "入選名單", "round": 1, "team": "三商虎", "player": "林岳亮", "pick": 2}, {"year": 1996, "type": "入選名單", "round": 2, "team": "三商虎", "player": "黃自強", "pick": 3}, {"year": 2000, "type": "季中新人選秀", "round": 0, "team": "興農牛", "player": "施昭同", "pick": 1}, {"year": 2000, "type": "季中新人選秀", "round": 1, "team": "統一獅", "player": "曾傑志", "pick": 2}, {"year": 2000, "type": "季中新人選秀", "round": 1, "team": "兄弟象", "player": "王金勇", "pick": 3}, {"year": 2000, "type": "季中新人選秀", "round": 1, "team": "和信鯨", "player": "郭博承", "pick": 4}, {"year": 2000, "type": "季中新人選秀", "round": 2, "team": "兄弟象", "player": "許閔嵐", "pick": 5}, {"year": 2000, "type": "季中新人選秀", "round": 2, "team": "和信鯨", "player": "周正雄", "pick": 6}, {"year": 2000, "type": "季中新人選秀", "round": 2, "team": "興農牛", "player": "林朝揚", "pick": 7}, {"year": 2000, "type": "季中新人選秀", "round": 3, "team": "兄弟象", "player": "李志傑", "pick": 8}, {"year": 2000, "type": "季中新人選秀", "round": 3, "team": "和信鯨", "player": "陳健偉", "pick": 9}, {"year": 2000, "type": "季中新人選秀", "round": 3, "team": "興農牛", "player": "高健龍", "pick": 10}, {"year": 2000, "type": "季中新人選秀", "round": 4, "team": "兄弟象", "player": "鍾宇政", "pick": 11}, {"year": 2000, "type": "季中新人選秀", "round": 4, "team": "和信鯨", "player": "邱國正", "pick": 12}, {"year": 2000, "type": "季前新人選秀", "round": 0, "team": "和信鯨", "player": "宋肇基", "pick": 1}, {"year": 2000, "type": "季前新人選秀", "round": 1, "team": "興農牛", "player": "張家浩", "pick": 2}, {"year": 2000, "type": "季前新人選秀", "round": 1, "team": "統一獅", "player": "鍾信富", "pick": 3}, {"year": 2001, "type": "季中新人選秀", "round": 0, "team": "興農牛", "player": "郭勇志", "pick": 1}, {"year": 2001, "type": "季中新人選秀", "round": 0, "team": "兄弟象", "player": "陳致遠", "pick": 2}, {"year": 2001, "type": "季中新人選秀", "round": 1, "team": "和信鯨", "player": "紀俊麟", "pick": 3}, {"year": 2001, "type": "季中新人選秀", "round": 1, "team": "統一獅", "player": "曾揚志", "pick": 4}, {"year": 2001, "type": "季中新人選秀", "round": 2, "team": "興農牛", "player": "羅仁成", "pick": 5}, {"year": 2001, "type": "季中新人選秀", "round": 2, "team": "兄弟象", "player": "邱信邦", "pick": 6}, {"year": 2001, "type": "季中新人選秀", "round": 3, "team": "兄弟象", "player": "賴建豪", "pick": 7}, {"year": 2001, "type": "季中新人選秀", "round": 4, "team": "兄弟象", "player": "鄭漢禮", "pick": 8}, {"year": 2001, "type": "季前新人選秀", "round": 0, "team": "統一獅", "player": "陳榮造", "pick": 1}, {"year": 2001, "type": "季前新人選秀", "round": 1, "team": "兄弟象", "player": "彭政閔", "pick": 2}, {"year": 2001, "type": "季前新人選秀", "round": 1, "team": "和信鯨", "player": "鄭昌明", "pick": 3}, {"year": 2001, "type": "季前新人選秀", "round": 1, "team": "興農牛", "player": "萬建榮", "pick": 4}, {"year": 2001, "type": "季前新人選秀", "round": 2, "team": "和信鯨", "player": "莊旻哲", "pick": 5}, {"year": 2002, "type": "季中新人選秀", "round": 1, "team": "統一獅", "player": "沈柏蒼", "pick": 1}, {"year": 2002, "type": "季中新人選秀", "round": 1, "team": "興農牛", "player": "安生", "pick": 2}, {"year": 2002, "type": "季中新人選秀", "round": 1, "team": "中信鯨", "player": "郭岱詠", "pick": 3}, {"year": 2002, "type": "季中新人選秀", "round": 1, "team": "兄弟象", "player": "朱鴻森", "pick": 4}, {"year": 2002, "type": "季前新人選秀", "round": 1, "team": "興農牛", "player": "蔡仲南", "pick": 1}, {"year": 2002, "type": "季前新人選秀", "round": 1, "team": "中信鯨", "player": "顏暉弦", "pick": 2}, {"year": 2002, "type": "季前新人選秀", "round": 1, "team": "統一獅", "player": "黃信福", "pick": 3}, {"year": 2002, "type": "季前新人選秀", "round": 1, "team": "兄弟象", "player": "陳興昌", "pick": 4}, {"year": 2002, "type": "季前新人選秀", "round": 2, "team": "興農牛", "player": "曾揚岳", "pick": 5}, {"year": 2002, "type": "季前新人選秀", "round": 2, "team": "中信鯨", "player": "曾漢州", "pick": 6}, {"year": 2002, "type": "季前新人選秀", "round": 2, "team": "統一獅", "player": "王坤堯", "pick": 7}, {"year": 2002, "type": "季前新人選秀", "round": 3, "team": "興農牛", "player": "陳志強", "pick": 8}, {"year": 2002, "type": "季前新人選秀", "round": 3, "team": "中信鯨", "player": "顏子堯", "pick": 9}, {"year": 2002, "type": "季前新人選秀", "round": 3, "team": "統一獅", "player": "林宗毅", "pick": 10}, {"year": 2002, "type": "季前新人選秀", "round": 4, "team": "興農牛", "player": "楊仁明", "pick": 11}, {"year": 2002, "type": "季前新人選秀", "round": 4, "team": "統一獅", "player": "葉高泉", "pick": 12}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "第一金剛", "player": "林智盛", "pick": 1}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "誠泰太陽", "player": "林恩宇", "pick": 2}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "中信鯨", "player": "曾兆豪", "pick": 3}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "統一獅", "player": "林岳平", "pick": 4}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "興農牛", "player": "李國慶", "pick": 5}, {"year": 2003, "type": "代訓選手選秀", "round": 1, "team": "兄弟象", "player": "莊宏亮", "pick": 6}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "第一金剛", "player": "徐余偉", "pick": 7}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "誠泰太陽", "player": "陳克帆", "pick": 8}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "中信鯨", "player": "陳嘉宏", "pick": 9}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "統一獅", "player": "陳家偉", "pick": 10}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "興農牛", "player": "張建銘", "pick": 11}, {"year": 2003, "type": "代訓選手選秀", "round": 2, "team": "兄弟象", "player": "劉俊男", "pick": 12}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "第一金剛", "player": "蔡建偉", "pick": 13}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "誠泰太陽", "player": "周思齊", "pick": 14}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "中信鯨", "player": "王宜民", "pick": 15}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "統一獅", "player": "施金典", "pick": 16}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "興農牛", "player": "許國隆", "pick": 17}, {"year": 2003, "type": "代訓選手選秀", "round": 3, "team": "兄弟象", "player": "林家煌", "pick": 18}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "第一金剛", "player": "蔡茂松", "pick": 19}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "誠泰太陽", "player": "黃仕豪", "pick": 20}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "中信鯨", "player": "王信民", "pick": 21}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "統一獅", "player": "高國慶", "pick": 22}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "興農牛", "player": "余進德", "pick": 23}, {"year": 2003, "type": "代訓選手選秀", "round": 4, "team": "兄弟象", "player": "杜寅傑", "pick": 24}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "第一金剛", "player": "吳偲佑", "pick": 25}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "誠泰太陽", "player": "陳元甲", "pick": 26}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "中信鯨", "player": "許人介", "pick": 27}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "統一獅", "player": "張家源", "pick": 28}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "興農牛", "player": "鄭志雄", "pick": 29}, {"year": 2003, "type": "代訓選手選秀", "round": 5, "team": "兄弟象", "player": "吳保賢", "pick": 30}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "第一金剛", "player": "沈亞倫", "pick": 31}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "誠泰太陽", "player": "施翔凱", "pick": 32}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "中信鯨", "player": "羅健銘", "pick": 33}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "統一獅", "player": "吳韋翰", "pick": 34}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "興農牛", "player": "徐嘉澤", "pick": 35}, {"year": 2003, "type": "代訓選手選秀", "round": 6, "team": "兄弟象", "player": "蔣廣沛", "pick": 36}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "第一金剛", "player": "曾恆彰", "pick": 37}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "誠泰太陽", "player": "鄭嘉明", "pick": 38}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "中信鯨", "player": "朱尉銘", "pick": 39}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "統一獅", "player": "顏淳浩", "pick": 40}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "興農牛", "player": "王世驊", "pick": 41}, {"year": 2003, "type": "代訓選手選秀", "round": 7, "team": "兄弟象", "player": "吳仲培", "pick": 42}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "第一金剛", "player": "石振賢", "pick": 43}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "誠泰太陽", "player": "廖書霆", "pick": 44}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "中信鯨", "player": "王俊仁", "pick": 45}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "統一獅", "player": "陳俊輝", "pick": 46}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "興農牛", "player": "潘世斌", "pick": 47}, {"year": 2003, "type": "代訓選手選秀", "round": 8, "team": "兄弟象", "player": "陳志良", "pick": 48}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "第一金剛", "player": "林俊萍", "pick": 49}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "誠泰太陽", "player": "王證僑", "pick": 50}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "中信鯨", "player": "葉長龍", "pick": 51}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "統一獅", "player": "謝大偉", "pick": 52}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "興農牛", "player": "林高鴻", "pick": 53}, {"year": 2003, "type": "代訓選手選秀", "round": 9, "team": "兄弟象", "player": "陳進龍", "pick": 54}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "第一金剛", "player": "劉松祚", "pick": 55}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "誠泰太陽", "player": "汪天祥", "pick": 56}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "中信鯨", "player": "李軼揚", "pick": 57}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "統一獅", "player": "王建明", "pick": 58}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "興農牛", "player": "林馴偉", "pick": 59}, {"year": 2003, "type": "代訓選手選秀", "round": 10, "team": "兄弟象", "player": "陳榮發", "pick": 60}, {"year": 2003, "type": "代訓選手選秀", "round": 11, "team": "第一金剛", "player": "黃小偉", "pick": 61}, {"year": 2003, "type": "代訓選手選秀", "round": 11, "team": "誠泰太陽", "player": "陽森", "pick": 62}, {"year": 2003, "type": "季中新人選秀", "round": 0, "team": "興農牛", "player": "陽建福", "pick": 1}, {"year": 2003, "type": "季中新人選秀", "round": 1, "team": "第一金剛", "player": "林建宏", "pick": 2}, {"year": 2003, "type": "季中新人選秀", "round": 1, "team": "統一獅", "player": "張志強", "pick": 3}, {"year": 2003, "type": "季中新人選秀", "round": 2, "team": "第一金剛", "player": "許志昌", "pick": 4}, {"year": 2003, "type": "季中新人選秀", "round": 2, "team": "統一獅", "player": "王子菘", "pick": 5}, {"year": 2003, "type": "季中新人選秀", "round": 2, "team": "興農牛", "player": "楊進雄", "pick": 6}, {"year": 2003, "type": "季前新人選秀", "round": 1, "team": "統一獅", "player": "潘威倫", "pick": 1}, {"year": 2003, "type": "季前新人選秀", "round": 1, "team": "興農牛", "player": "余文彬", "pick": 2}, {"year": 2003, "type": "季前新人選秀", "round": 1, "team": "中信鯨", "player": "吳潤岩", "pick": 3}, {"year": 2003, "type": "季前新人選秀", "round": 1, "team": "兄弟象", "player": "陳世斌", "pick": 4}, {"year": 2003, "type": "季前新人選秀", "round": 2, "team": "統一獅", "player": "王志忠", "pick": 5}, {"year": 2003, "type": "季前新人選秀", "round": 2, "team": "興農牛", "player": "邱敏舜", "pick": 6}, {"year": 2003, "type": "季前新人選秀", "round": 2, "team": "中信鯨", "player": "陳麒元", "pick": 7}, {"year": 2004, "type": "代訓選手選秀(一)", "round": 1, "team": "兄弟象", "player": "黃正偉", "pick": 1}, {"year": 2004, "type": "代訓選手選秀(一)", "round": 1, "team": "誠泰COBRAS", "player": "翁再生", "pick": 2}, {"year": 2004, "type": "代訓選手選秀(一)", "round": 1, "team": "興農牛", "player": "陳昭評", "pick": 3}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 1, "team": "La New熊", "player": "林津平", "pick": 1}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "La New熊", "player": "潘健綜", "pick": 2}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "兄弟象", "player": "劉耿欣", "pick": 3}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "誠泰COBRAS", "player": "張賢智", "pick": 4}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "興農牛", "player": "林宗男", "pick": 5}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "統一獅", "player": "涂壯勳", "pick": 6}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 2, "team": "中信鯨", "player": "陳江和", "pick": 7}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 3, "team": "兄弟象", "player": "楊博任", "pick": 8}, {"year": 2004, "type": "代訓選手選秀(三)", "round": 3, "team": "誠泰COBRAS", "player": "陳其宏", "pick": 9}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 1, "team": "統一獅", "player": "高志綱", "pick": 1}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 1, "team": "中信鯨", "player": "杜章偉", "pick": 2}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 1, "team": "La New熊", "player": "蔡英峰", "pick": 3}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "統一獅", "player": "林正豐", "pick": 4}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "中信鯨", "player": "高俊強", "pick": 5}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "La New熊", "player": "張億得", "pick": 6}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "兄弟象", "player": "賴業安", "pick": 7}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "誠泰COBRAS", "player": "黃浩然", "pick": 8}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 2, "team": "興農牛", "player": "許騰元", "pick": 9}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "統一獅", "player": "許峰賓", "pick": 10}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "中信鯨", "player": "曾家賢", "pick": 11}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "La New熊", "player": "張育保", "pick": 12}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "兄弟象", "player": "陳冠任", "pick": 13}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "誠泰COBRAS", "player": "陳永哲", "pick": 14}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 3, "team": "興農牛", "player": "楊明忠", "pick": 15}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "統一獅", "player": "鄭乃文", "pick": 16}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "中信鯨", "player": "何忠龍", "pick": 17}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "La New熊", "player": "黃國慶", "pick": 18}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "兄弟象", "player": "賴浩鈞", "pick": 19}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "誠泰COBRAS", "player": "莊復華", "pick": 20}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 4, "team": "興農牛", "player": "曾鏡峰", "pick": 21}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 5, "team": "統一獅", "player": "方宏哲", "pick": 22}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 5, "team": "中信鯨", "player": "曾信貴", "pick": 23}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 5, "team": "兄弟象", "player": "陳冠呈", "pick": 24}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 5, "team": "誠泰COBRAS", "player": "楊博超", "pick": 25}, {"year": 2004, "type": "代訓選手選秀(二)", "round": 5, "team": "興農牛", "player": "黃柏仁", "pick": 26}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "La New熊", "player": "石志偉", "pick": 1}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "誠泰COBRAS", "player": "鄧蒔陽", "pick": 2}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "中信鯨", "player": "王國進", "pick": 3}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "統一獅", "player": "劉芙豪", "pick": 4}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "興農牛", "player": "潘武雄", "pick": 5}, {"year": 2004, "type": "季前新人選秀", "round": 1, "team": "兄弟象", "player": "莊培全", "pick": 6}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "La New熊", "player": "張民傑", "pick": 7}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "誠泰COBRAS", "player": "沈鈺傑", "pick": 8}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "中信鯨", "player": "趙彥名", "pick": 9}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "統一獅", "player": "陽東益", "pick": 10}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "興農牛", "player": "尤志欽", "pick": 11}, {"year": 2004, "type": "季前新人選秀", "round": 2, "team": "兄弟象", "player": "彭政欣", "pick": 12}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "La New熊", "player": "許志華", "pick": 1}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "誠泰COBRAS", "player": "田家安", "pick": 2}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "中信鯨", "player": "沈鈺傑", "pick": 3}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "兄弟象", "player": "廖于誠", "pick": 4}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "統一獅", "player": "郭岱琦", "pick": 5}, {"year": 2004, "type": "季後新人選秀", "round": 1, "team": "興農牛", "player": "余賢明", "pick": 6}, {"year": 2004, "type": "季後新人選秀", "round": 2, "team": "La New熊", "player": "林士欽", "pick": 7}, {"year": 2004, "type": "季後新人選秀", "round": 2, "team": "中信鯨", "player": "吳修帆", "pick": 8}, {"year": 2004, "type": "季後新人選秀", "round": 3, "team": "La New熊", "player": "許傳誠", "pick": 9}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "La New熊", "player": "黃俊中", "pick": 1}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "兄弟象", "player": "葉詠捷", "pick": 2}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "中信鯨", "player": "倪福德", "pick": 3}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "統一獅", "player": "潘俊榮", "pick": 4}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "誠泰COBRAS", "player": "王薪權", "pick": 5}, {"year": 2005, "type": "代訓選手選秀", "round": 1, "team": "興農牛", "player": "鍾家寶", "pick": 6}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "La New熊", "player": "蔡宗佑", "pick": 7}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "兄弟象", "player": "王泳鑫", "pick": 8}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "中信鯨", "player": "黃建超", "pick": 9}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "統一獅", "player": "陳凱恩", "pick": 10}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "誠泰COBRAS", "player": "林紹凱", "pick": 11}, {"year": 2005, "type": "代訓選手選秀", "round": 2, "team": "興農牛", "player": "胡竣傑", "pick": 12}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "La New熊", "player": "林永坤", "pick": 13}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "兄弟象", "player": "王勇熙", "pick": 14}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "中信鯨", "player": "陳志高", "pick": 15}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "統一獅", "player": "萬德祥", "pick": 16}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "誠泰COBRAS", "player": "林敬民", "pick": 17}, {"year": 2005, "type": "代訓選手選秀", "round": 3, "team": "興農牛", "player": "陳意忠", "pick": 18}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "La New熊", "player": "吳柏宏", "pick": 19}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "兄弟象", "player": "洪榮宏", "pick": 20}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "中信鯨", "player": "潘瑞勳", "pick": 21}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "統一獅", "player": "林揚智", "pick": 22}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "誠泰COBRAS", "player": "徐世傑", "pick": 23}, {"year": 2005, "type": "代訓選手選秀", "round": 4, "team": "興農牛", "player": "胡軒溢", "pick": 24}, {"year": 2005, "type": "代訓選手選秀", "round": 5, "team": "La New熊", "player": "林建男", "pick": 25}, {"year": 2005, "type": "代訓選手選秀", "round": 5, "team": "兄弟象", "player": "林星辰", "pick": 26}, {"year": 2005, "type": "代訓選手選秀", "round": 5, "team": "中信鯨", "player": "鄭安庭", "pick": 27}, {"year": 2005, "type": "代訓選手選秀", "round": 5, "team": "統一獅", "player": "陳信凱", "pick": 28}, {"year": 2005, "type": "代訓選手選秀", "round": 5, "team": "誠泰COBRAS", "player": "連榕修", "pick": 29}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "La New熊", "player": "陳金鋒", "pick": 1}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "中信鯨", "player": "蘇哲毅", "pick": 2}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "兄弟象", "player": "葉丁仁", "pick": 3}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "統一獅", "player": "江柏青", "pick": 4}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "誠泰COBRAS", "player": "陳家鴻", "pick": 5}, {"year": 2005, "type": "新人選秀", "round": 1, "team": "興農牛", "player": "蘇建榮", "pick": 6}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "La New熊", "player": "蔣智聰", "pick": 7}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "中信鯨", "player": "邱俊文", "pick": 8}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "兄弟象", "player": "陳智弘", "pick": 9}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "統一獅", "player": "潘武雄", "pick": 10}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "誠泰COBRAS", "player": "陳致鵬", "pick": 11}, {"year": 2005, "type": "新人選秀", "round": 2, "team": "興農牛", "player": "盧銘銓", "pick": 12}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "La New熊", "player": "林聖凱", "pick": 13}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "中信鯨", "player": "鄭志強", "pick": 14}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "兄弟象", "player": "田顯明", "pick": 15}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "統一獅", "player": "鄭博王", "pick": 16}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "誠泰COBRAS", "player": "高瑋", "pick": 17}, {"year": 2005, "type": "新人選秀", "round": 3, "team": "興農牛", "player": "鄭閔韓", "pick": 18}, {"year": 2005, "type": "新人選秀", "round": 4, "team": "La New熊", "player": "劉奕志", "pick": 19}, {"year": 2005, "type": "新人選秀", "round": 4, "team": "統一獅", "player": "黃士銘", "pick": 20}, {"year": 2005, "type": "新人選秀", "round": 4, "team": "興農牛", "player": "陳志偉", "pick": 21}, {"year": 2005, "type": "新人選秀", "round": 5, "team": "La New熊", "player": "許智強", "pick": 22}, {"year": 2005, "type": "新人選秀", "round": 6, "team": "La New熊", "player": "周宗義", "pick": 23}, {"year": 2005, "type": "新人選秀", "round": 7, "team": "La New熊", "player": "王志榮", "pick": 24}, {"year": 2005, "type": "新人選秀", "round": 8, "team": "La New熊", "player": "顏志中", "pick": 25}, {"year": 2005, "type": "新人選秀", "round": 9, "team": "La New熊", "player": "陳彥誌", "pick": 26}, {"year": 2005, "type": "新人選秀", "round": 10, "team": "La New熊", "player": "劉家豪", "pick": 27}, {"year": 2005, "type": "新人選秀", "round": 11, "team": "La New熊", "player": "王鵬齊", "pick": 28}, {"year": 2005, "type": "新人選秀", "round": 12, "team": "La New熊", "player": "胡進夫", "pick": 29}, {"year": 2005, "type": "新人選秀", "round": 13, "team": "La New熊", "player": "曹偉慶", "pick": 30}, {"year": 2005, "type": "新人選秀", "round": 14, "team": "La New熊", "player": "陳彥銘", "pick": 31}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "兄弟象", "player": "王勝偉", "pick": 1}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "中信鯨", "player": "李義偉", "pick": 2}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "誠泰COBRAS", "player": "陳建輔", "pick": 3}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "興農牛", "player": "沈福仁", "pick": 4}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "統一獅", "player": "郭俊佑", "pick": 5}, {"year": 2006, "type": "代訓選手選秀", "round": 1, "team": "La New熊", "player": "曾俊彥", "pick": 6}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "兄弟象", "player": "曾嘉敏", "pick": 7}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "中信鯨", "player": "高敏靜", "pick": 8}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "誠泰COBRAS", "player": "賴俊男", "pick": 9}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "興農牛", "player": "蔡明晉", "pick": 10}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "統一獅", "player": "尤清韋", "pick": 11}, {"year": 2006, "type": "代訓選手選秀", "round": 2, "team": "La New熊", "player": "吳明儀", "pick": 12}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "兄弟象", "player": "黃榮義", "pick": 13}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "中信鯨", "player": "黃宏任", "pick": 14}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "誠泰COBRAS", "player": "吳家輝", "pick": 15}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "興農牛", "player": "林其緯", "pick": 16}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "統一獅", "player": "雷凱迪", "pick": 17}, {"year": 2006, "type": "代訓選手選秀", "round": 3, "team": "La New熊", "player": "陳建霖", "pick": 18}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "兄弟象", "player": "林瑋翔", "pick": 19}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "中信鯨", "player": "康哲瑋", "pick": 20}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "誠泰COBRAS", "player": "陳宗宏", "pick": 21}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "興農牛", "player": "吳家維", "pick": 22}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "統一獅", "player": "李建芩", "pick": 23}, {"year": 2006, "type": "代訓選手選秀", "round": 4, "team": "La New熊", "player": "陳銹顯", "pick": 24}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "兄弟象", "player": "李振男", "pick": 25}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "中信鯨", "player": "林錦章", "pick": 26}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "誠泰COBRAS", "player": "呂祐華", "pick": 27}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "興農牛", "player": "黃光永", "pick": 28}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "統一獅", "player": "鄭友宗", "pick": 29}, {"year": 2006, "type": "代訓選手選秀", "round": 5, "team": "La New熊", "player": "紀榮家", "pick": 30}, {"year": 2006, "type": "代訓選手選秀", "round": 6, "team": "兄弟象", "player": "唐安", "pick": 31}, {"year": 2006, "type": "代訓選手選秀", "round": 6, "team": "中信鯨", "player": "林冠仲", "pick": 32}, {"year": 2006, "type": "代訓選手選秀", "round": 6, "team": "誠泰COBRAS", "player": "潘忠孝", "pick": 33}, {"year": 2006, "type": "新人選秀", "round": 1, "team": "兄弟象", "player": "陳江和", "pick": 1}, {"year": 2006, "type": "新人選秀", "round": 1, "team": "中信鯨", "player": "郭建宏", "pick": 2}, {"year": 2006, "type": "新人選秀", "round": 1, "team": "興農牛", "player": "陳彥銘", "pick": 3}, {"year": 2006, "type": "新人選秀", "round": 1, "team": "La New熊", "player": "林哲雄", "pick": 4}, {"year": 2006, "type": "新人選秀", "round": 2, "team": "兄弟象", "player": "林家緯", "pick": 5}, {"year": 2006, "type": "新人選秀", "round": 2, "team": "中信鯨", "player": "巫仁傑", "pick": 6}, {"year": 2006, "type": "新人選秀", "round": 2, "team": "興農牛", "player": "林加祐", "pick": 7}, {"year": 2006, "type": "新人選秀", "round": 2, "team": "La New熊", "player": "鄭余亮", "pick": 8}, {"year": 2006, "type": "新人選秀", "round": 3, "team": "La New熊", "player": "葉俊麟", "pick": 9}, {"year": 2006, "type": "新人選秀", "round": 4, "team": "La New熊", "player": "劉家華", "pick": 10}, {"year": 2006, "type": "新人選秀", "round": 6, "team": "中信鯨", "player": "許人介", "pick": 11}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "興農牛", "player": "林益全", "pick": 1}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "誠泰COBRAS", "player": "詹智堯", "pick": 2}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "中信鯨", "player": "唐嘉駿", "pick": 3}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "買嘉瑞", "pick": 4}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "La New熊", "player": "許銘傑", "pick": 5}, {"year": 2007, "type": "一般選秀", "round": 1, "team": "統一獅", "player": "李瑋華", "pick": 6}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "興農牛", "player": "廖英傑", "pick": 7}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "誠泰COBRAS", "player": "王泯皓", "pick": 8}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "中信鯨", "player": "林瀚", "pick": 9}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "李濠任", "pick": 10}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "La New熊", "player": "蘇袁億", "pick": 11}, {"year": 2007, "type": "一般選秀", "round": 2, "team": "統一獅", "player": "郭健瑜", "pick": 12}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "興農牛", "player": "黃義哲", "pick": 13}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "誠泰COBRAS", "player": "胡仁偉", "pick": 14}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "中信鯨", "player": "黃政琦", "pick": 15}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "汪竣泰", "pick": 16}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "La New熊", "player": "鍾承佑", "pick": 17}, {"year": 2007, "type": "一般選秀", "round": 3, "team": "統一獅", "player": "利弘揚", "pick": 18}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "興農牛", "player": "吳政憲", "pick": 19}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "誠泰COBRAS", "player": "楊冠毅", "pick": 20}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "中信鯨", "player": "張志豪", "pick": 21}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "劉裕安", "pick": 22}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "La New熊", "player": "林智平", "pick": 23}, {"year": 2007, "type": "一般選秀", "round": 4, "team": "統一獅", "player": "劉育辰", "pick": 24}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "興農牛", "player": "張政憲", "pick": 25}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "誠泰COBRAS", "player": "李冠緯", "pick": 26}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "中信鯨", "player": "李金木", "pick": 27}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "王昱博", "pick": 28}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "La New熊", "player": "李晉銘", "pick": 29}, {"year": 2007, "type": "一般選秀", "round": 5, "team": "統一獅", "player": "王勝榮", "pick": 30}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "興農牛", "player": "謝明宗", "pick": 31}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "誠泰COBRAS", "player": "楊賢政", "pick": 32}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "中信鯨", "player": "曾偉誠", "pick": 33}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "楊宗範", "pick": 34}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "La New熊", "player": "林志賢", "pick": 35}, {"year": 2007, "type": "一般選秀", "round": 6, "team": "統一獅", "player": "蕭清龍", "pick": 36}, {"year": 2007, "type": "一般選秀", "round": 7, "team": "誠泰COBRAS", "player": "邱俊霖", "pick": 37}, {"year": 2007, "type": "一般選秀", "round": 7, "team": "中信鯨", "player": "葉彥男", "pick": 38}, {"year": 2007, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "陳韋閔", "pick": 39}, {"year": 2007, "type": "一般選秀", "round": 8, "team": "誠泰COBRAS", "player": "施宏明", "pick": 40}, {"year": 2007, "type": "一般選秀", "round": 8, "team": "中信鯨", "player": "陽聖凱", "pick": 41}, {"year": 2007, "type": "一般選秀", "round": 9, "team": "中信鯨", "player": "許秦瑋", "pick": 42}, {"year": 2007, "type": "一般選秀", "round": 10, "team": "中信鯨", "player": "陳柏鈞", "pick": 43}, {"year": 2008, "type": "新人選秀", "round": 1, "team": "興農牛", "player": "林克謙", "pick": 1}, {"year": 2008, "type": "新人選秀", "round": 1, "team": "兄弟象", "player": "曹錦輝", "pick": 2}, {"year": 2008, "type": "新人選秀", "round": 1, "team": "La New熊", "player": "耿伯軒", "pick": 3}, {"year": 2008, "type": "新人選秀", "round": 1, "team": "統一獅", "player": "王鏡銘", "pick": 4}, {"year": 2008, "type": "新人選秀", "round": 2, "team": "興農牛", "player": "林國民", "pick": 5}, {"year": 2008, "type": "新人選秀", "round": 2, "team": "兄弟象", "player": "黃志祥", "pick": 6}, {"year": 2008, "type": "新人選秀", "round": 2, "team": "La New熊", "player": "王溢正", "pick": 7}, {"year": 2008, "type": "新人選秀", "round": 2, "team": "統一獅", "player": "陳逸宸", "pick": 8}, {"year": 2008, "type": "新人選秀", "round": 3, "team": "興農牛", "player": "藍少白", "pick": 9}, {"year": 2008, "type": "新人選秀", "round": 3, "team": "兄弟象", "player": "曾保羅", "pick": 10}, {"year": 2008, "type": "新人選秀", "round": 3, "team": "La New熊", "player": "林泓育", "pick": 11}, {"year": 2008, "type": "新人選秀", "round": 3, "team": "統一獅", "player": "買嘉儀", "pick": 12}, {"year": 2008, "type": "新人選秀", "round": 4, "team": "興農牛", "player": "吳宗峻", "pick": 13}, {"year": 2008, "type": "新人選秀", "round": 4, "team": "兄弟象", "player": "陳政陽", "pick": 14}, {"year": 2008, "type": "新人選秀", "round": 4, "team": "La New熊", "player": "何信賢", "pick": 15}, {"year": 2008, "type": "新人選秀", "round": 4, "team": "統一獅", "player": "林偉", "pick": 16}, {"year": 2008, "type": "新人選秀", "round": 5, "team": "興農牛", "player": "陳柏丞", "pick": 17}, {"year": 2008, "type": "新人選秀", "round": 5, "team": "兄弟象", "player": "朱偉銘", "pick": 18}, {"year": 2008, "type": "新人選秀", "round": 5, "team": "La New熊", "player": "陳雁風", "pick": 19}, {"year": 2008, "type": "新人選秀", "round": 5, "team": "統一獅", "player": "周廣勝", "pick": 20}, {"year": 2008, "type": "新人選秀", "round": 6, "team": "興農牛", "player": "陳瑞慕", "pick": 21}, {"year": 2008, "type": "新人選秀", "round": 6, "team": "兄弟象", "player": "黃啟書", "pick": 22}, {"year": 2008, "type": "新人選秀", "round": 6, "team": "La New熊", "player": "馬學平", "pick": 23}, {"year": 2008, "type": "新人選秀", "round": 6, "team": "統一獅", "player": "鄧志永", "pick": 24}, {"year": 2008, "type": "新人選秀", "round": 7, "team": "興農牛", "player": "張正偉", "pick": 25}, {"year": 2008, "type": "新人選秀", "round": 7, "team": "兄弟象", "player": "朱瑞宗", "pick": 26}, {"year": 2008, "type": "新人選秀", "round": 7, "team": "La New熊", "player": "朱世宏", "pick": 27}, {"year": 2008, "type": "新人選秀", "round": 7, "team": "統一獅", "player": "顏政財", "pick": 28}, {"year": 2008, "type": "新人選秀", "round": 8, "team": "興農牛", "player": "郭湳德", "pick": 29}, {"year": 2008, "type": "新人選秀", "round": 8, "team": "兄弟象", "player": "簡富智", "pick": 30}, {"year": 2008, "type": "新人選秀", "round": 8, "team": "La New熊", "player": "顏保羅", "pick": 31}, {"year": 2008, "type": "新人選秀", "round": 9, "team": "興農牛", "player": "姜建銘", "pick": 32}, {"year": 2008, "type": "新人選秀", "round": 9, "team": "兄弟象", "player": "林根緯", "pick": 33}, {"year": 2008, "type": "特別選秀", "round": 1, "team": "興農牛", "player": "謝佳賢", "pick": 1}, {"year": 2008, "type": "特別選秀", "round": 1, "team": "兄弟象", "player": "倪福德", "pick": 2}, {"year": 2008, "type": "特別選秀", "round": 1, "team": "La New熊", "player": "詹智堯", "pick": 3}, {"year": 2008, "type": "特別選秀", "round": 1, "team": "統一獅", "player": "朱尉銘", "pick": 4}, {"year": 2008, "type": "特別選秀", "round": 2, "team": "興農牛", "player": "林英傑", "pick": 5}, {"year": 2008, "type": "特別選秀", "round": 2, "team": "兄弟象", "player": "柳裕展", "pick": 6}, {"year": 2008, "type": "特別選秀", "round": 2, "team": "La New熊", "player": "黃宏任", "pick": 7}, {"year": 2008, "type": "特別選秀", "round": 2, "team": "統一獅", "player": "林瀚", "pick": 8}, {"year": 2008, "type": "特別選秀", "round": 3, "team": "興農牛", "player": "沈鈺傑", "pick": 9}, {"year": 2008, "type": "特別選秀", "round": 3, "team": "兄弟象", "player": "周思齊", "pick": 10}, {"year": 2008, "type": "特別選秀", "round": 3, "team": "La New熊", "player": "張志豪", "pick": 11}, {"year": 2008, "type": "特別選秀", "round": 4, "team": "興農牛", "player": "李義偉", "pick": 12}, {"year": 2008, "type": "特別選秀", "round": 4, "team": "兄弟象", "player": "陳致鵬", "pick": 13}, {"year": 2008, "type": "特別選秀", "round": 4, "team": "La New熊", "player": "曾兆豪", "pick": 14}, {"year": 2008, "type": "特別選秀", "round": 5, "team": "興農牛", "player": "鄧蒔陽", "pick": 15}, {"year": 2008, "type": "特別選秀", "round": 5, "team": "La New熊", "player": "黃浩然", "pick": 16}, {"year": 2008, "type": "特別選秀", "round": 6, "team": "興農牛", "player": "王泯皓", "pick": 17}, {"year": 2008, "type": "特別選秀", "round": 6, "team": "La New熊", "player": "唐嘉駿", "pick": 18}, {"year": 2009, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "林恩宇", "pick": 1}, {"year": 2009, "type": "一般選秀", "round": 1, "team": "興農牛", "player": "張耿豪", "pick": 2}, {"year": 2009, "type": "一般選秀", "round": 1, "team": "La New熊", "player": "李居冠", "pick": 3}, {"year": 2009, "type": "一般選秀", "round": 1, "team": "統一獅", "player": "蔡璟豪", "pick": 4}, {"year": 2009, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "張志豪", "pick": 5}, {"year": 2009, "type": "一般選秀", "round": 2, "team": "興農牛", "player": "羅正龍", "pick": 6}, {"year": 2009, "type": "一般選秀", "round": 2, "team": "La New熊", "player": "郭駿傑", "pick": 7}, {"year": 2009, "type": "一般選秀", "round": 2, "team": "統一獅", "player": "林志祥", "pick": 8}, {"year": 2009, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "陳偉建", "pick": 9}, {"year": 2009, "type": "一般選秀", "round": 3, "team": "興農牛", "player": "孟劭穎", "pick": 10}, {"year": 2009, "type": "一般選秀", "round": 3, "team": "La New熊", "player": "林家瑋", "pick": 11}, {"year": 2009, "type": "一般選秀", "round": 3, "team": "統一獅", "player": "朱元勤", "pick": 12}, {"year": 2009, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "陳釱碩", "pick": 13}, {"year": 2009, "type": "一般選秀", "round": 4, "team": "興農牛", "player": "卓志名", "pick": 14}, {"year": 2009, "type": "一般選秀", "round": 4, "team": "La New熊", "player": "蕭宇奇", "pick": 15}, {"year": 2009, "type": "一般選秀", "round": 4, "team": "統一獅", "player": "何家榮", "pick": 16}, {"year": 2009, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "黃佳明", "pick": 17}, {"year": 2009, "type": "一般選秀", "round": 5, "team": "興農牛", "player": "楊先賢", "pick": 18}, {"year": 2009, "type": "一般選秀", "round": 5, "team": "La New熊", "player": "郭修維", "pick": 19}, {"year": 2009, "type": "一般選秀", "round": 5, "team": "統一獅", "player": "鄭崴王", "pick": 20}, {"year": 2009, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "蔡明覺", "pick": 21}, {"year": 2009, "type": "一般選秀", "round": 6, "team": "興農牛", "player": "陳煥揚", "pick": 22}, {"year": 2009, "type": "一般選秀", "round": 6, "team": "La New熊", "player": "葉竹軒", "pick": 23}, {"year": 2009, "type": "一般選秀", "round": 6, "team": "統一獅", "player": "藍少文", "pick": 24}, {"year": 2009, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "王偉仲", "pick": 25}, {"year": 2009, "type": "一般選秀", "round": 7, "team": "興農牛", "player": "林凱倫", "pick": 26}, {"year": 2009, "type": "一般選秀", "round": 7, "team": "La New熊", "player": "李家航", "pick": 27}, {"year": 2009, "type": "一般選秀", "round": 7, "team": "統一獅", "player": "增鈺傑", "pick": 28}, {"year": 2009, "type": "一般選秀", "round": 8, "team": "兄弟象", "player": "陳俊霖", "pick": 29}, {"year": 2009, "type": "一般選秀", "round": 8, "team": "興農牛", "player": "黃湋暟", "pick": 30}, {"year": 2009, "type": "一般選秀", "round": 8, "team": "La New熊", "player": "何杉駿", "pick": 31}, {"year": 2009, "type": "一般選秀", "round": 8, "team": "統一獅", "player": "謝富仲", "pick": 32}, {"year": 2009, "type": "一般選秀", "round": 9, "team": "兄弟象", "player": "楊展旭", "pick": 33}, {"year": 2009, "type": "一般選秀", "round": 9, "team": "興農牛", "player": "謝炫任", "pick": 34}, {"year": 2009, "type": "一般選秀", "round": 9, "team": "La New熊", "player": "林政億", "pick": 35}, {"year": 2009, "type": "一般選秀", "round": 9, "team": "統一獅", "player": "羅國華", "pick": 36}, {"year": 2009, "type": "一般選秀", "round": 10, "team": "兄弟象", "player": "方克偉", "pick": 37}, {"year": 2009, "type": "一般選秀", "round": 10, "team": "興農牛", "player": "張鎧", "pick": 38}, {"year": 2009, "type": "一般選秀", "round": 10, "team": "La New熊", "player": "陳正達", "pick": 39}, {"year": 2009, "type": "一般選秀", "round": 10, "team": "統一獅", "player": "陽龍華", "pick": 40}, {"year": 2009, "type": "一般選秀", "round": 11, "team": "兄弟象", "player": "曾勇達", "pick": 41}, {"year": 2009, "type": "一般選秀", "round": 11, "team": "興農牛", "player": "黃伯楷", "pick": 42}, {"year": 2009, "type": "一般選秀", "round": 11, "team": "La New熊", "player": "王湘嵐", "pick": 43}, {"year": 2009, "type": "一般選秀", "round": 12, "team": "兄弟象", "player": "宇招任", "pick": 44}, {"year": 2009, "type": "一般選秀", "round": 13, "team": "兄弟象", "player": "許峰賓", "pick": 45}, {"year": 2009, "type": "一般選秀", "round": 14, "team": "兄弟象", "player": "陳炫綸", "pick": 46}, {"year": 2009, "type": "一般選秀", "round": 15, "team": "兄弟象", "player": "黃義山", "pick": 47}, {"year": 2009, "type": "一般選秀", "round": 16, "team": "兄弟象", "player": "陳威儒", "pick": 48}, {"year": 2009, "type": "一般選秀", "round": 17, "team": "兄弟象", "player": "林豐裕", "pick": 49}, {"year": 2009, "type": "一般選秀", "round": 18, "team": "兄弟象", "player": "尤信男", "pick": 50}, {"year": 2009, "type": "一般選秀", "round": 19, "team": "兄弟象", "player": "尤信淳", "pick": 51}, {"year": 2010, "type": "一般選秀", "round": 1, "team": "統一獅", "player": "陳鑄基", "pick": 1}, {"year": 2010, "type": "一般選秀", "round": 1, "team": "La New熊", "player": "郭嚴文", "pick": 2}, {"year": 2010, "type": "一般選秀", "round": 1, "team": "興農牛", "player": "黃智培", "pick": 3}, {"year": 2010, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "增菘瑋", "pick": 4}, {"year": 2010, "type": "一般選秀", "round": 2, "team": "統一獅", "player": "廖文揚", "pick": 5}, {"year": 2010, "type": "一般選秀", "round": 2, "team": "La New熊", "player": "鄭承浩", "pick": 6}, {"year": 2010, "type": "一般選秀", "round": 2, "team": "興農牛", "player": "賴鴻誠", "pick": 7}, {"year": 2010, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "鄭錡鴻", "pick": 8}, {"year": 2010, "type": "一般選秀", "round": 3, "team": "統一獅", "player": "王英山", "pick": 9}, {"year": 2010, "type": "一般選秀", "round": 3, "team": "La New熊", "player": "余德龍", "pick": 10}, {"year": 2010, "type": "一般選秀", "round": 3, "team": "興農牛", "player": "許文錚", "pick": 11}, {"year": 2010, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "邱俊瑋", "pick": 12}, {"year": 2010, "type": "一般選秀", "round": 4, "team": "統一獅", "player": "蔡萬霖", "pick": 13}, {"year": 2010, "type": "一般選秀", "round": 4, "team": "La New熊", "player": "王韋仁", "pick": 14}, {"year": 2010, "type": "一般選秀", "round": 4, "team": "興農牛", "player": "林琨笙", "pick": 15}, {"year": 2010, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "官大元", "pick": 16}, {"year": 2010, "type": "一般選秀", "round": 5, "team": "統一獅", "player": "黃恩賜", "pick": 17}, {"year": 2010, "type": "一般選秀", "round": 5, "team": "La New熊", "player": "許躍騰", "pick": 18}, {"year": 2010, "type": "一般選秀", "round": 5, "team": "興農牛", "player": "陳凱倫", "pick": 19}, {"year": 2010, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "石孝榮", "pick": 20}, {"year": 2010, "type": "一般選秀", "round": 6, "team": "統一獅", "player": "傅于剛", "pick": 21}, {"year": 2010, "type": "一般選秀", "round": 6, "team": "La New熊", "player": "翁克堯", "pick": 22}, {"year": 2010, "type": "一般選秀", "round": 6, "team": "興農牛", "player": "李家駒", "pick": 23}, {"year": 2010, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "顏嘉威", "pick": 24}, {"year": 2010, "type": "一般選秀", "round": 7, "team": "統一獅", "player": "方南堯", "pick": 25}, {"year": 2010, "type": "一般選秀", "round": 7, "team": "La New熊", "player": "吳俊逸", "pick": 26}, {"year": 2010, "type": "一般選秀", "round": 7, "team": "興農牛", "player": "黃劉清", "pick": 27}, {"year": 2010, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "黃鈞聲", "pick": 28}, {"year": 2010, "type": "一般選秀", "round": 8, "team": "統一獅", "player": "李育儒", "pick": 29}, {"year": 2010, "type": "一般選秀", "round": 8, "team": "La New熊", "player": "黃梓育", "pick": 30}, {"year": 2010, "type": "一般選秀", "round": 8, "team": "興農牛", "player": "江子健", "pick": 31}, {"year": 2010, "type": "一般選秀", "round": 8, "team": "兄弟象", "player": "林宇祥", "pick": 32}, {"year": 2010, "type": "一般選秀", "round": 9, "team": "統一獅", "player": "陳智燿", "pick": 33}, {"year": 2010, "type": "一般選秀", "round": 9, "team": "La New熊", "player": "林偉", "pick": 34}, {"year": 2010, "type": "一般選秀", "round": 9, "team": "興農牛", "player": "林瑋恩", "pick": 35}, {"year": 2010, "type": "一般選秀", "round": 9, "team": "兄弟象", "player": "蔡昇峰", "pick": 36}, {"year": 2010, "type": "一般選秀", "round": 10, "team": "統一獅", "player": "鄭展誠", "pick": 37}, {"year": 2010, "type": "一般選秀", "round": 10, "team": "La New熊", "player": "江俊傑", "pick": 38}, {"year": 2010, "type": "一般選秀", "round": 10, "team": "興農牛", "player": "徐育德", "pick": 39}, {"year": 2010, "type": "一般選秀", "round": 10, "team": "兄弟象", "player": "徐睿擇", "pick": 40}, {"year": 2010, "type": "一般選秀", "round": 11, "team": "統一獅", "player": "王寶篁", "pick": 41}, {"year": 2010, "type": "一般選秀", "round": 11, "team": "La New熊", "player": "馬仲權", "pick": 42}, {"year": 2010, "type": "一般選秀", "round": 11, "team": "興農牛", "player": "李金龍", "pick": 43}, {"year": 2010, "type": "一般選秀", "round": 11, "team": "兄弟象", "player": "鄧堯中", "pick": 44}, {"year": 2010, "type": "一般選秀", "round": 12, "team": "統一獅", "player": "黃俊欽", "pick": 45}, {"year": 2010, "type": "一般選秀", "round": 12, "team": "La New熊", "player": "莫生政", "pick": 46}, {"year": 2010, "type": "一般選秀", "round": 12, "team": "兄弟象", "player": "李維祥", "pick": 47}, {"year": 2010, "type": "一般選秀", "round": 13, "team": "La New熊", "player": "溫元川", "pick": 48}, {"year": 2010, "type": "一般選秀", "round": 13, "team": "兄弟象", "player": "黃郁倫", "pick": 49}, {"year": 2010, "type": "一般選秀", "round": 14, "team": "兄弟象", "player": "張榮勝", "pick": 50}, {"year": 2011, "type": "一般選秀", "round": 1, "team": "興農牛", "player": "林晨樺", "pick": 1}, {"year": 2011, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "林煜清", "pick": 2}, {"year": 2011, "type": "一般選秀", "round": 1, "team": "Lamigo桃猿", "player": "林旺億", "pick": 3}, {"year": 2011, "type": "一般選秀", "round": 1, "team": "統一獅", "player": "黃志龍", "pick": 4}, {"year": 2011, "type": "一般選秀", "round": 2, "team": "興農牛", "player": "林彥峰", "pick": 5}, {"year": 2011, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "盧劭禹", "pick": 6}, {"year": 2011, "type": "一般選秀", "round": 2, "team": "Lamigo桃猿", "player": "洪臣宇", "pick": 7}, {"year": 2011, "type": "一般選秀", "round": 2, "team": "統一獅", "player": "鄧志偉", "pick": 8}, {"year": 2011, "type": "一般選秀", "round": 3, "team": "興農牛", "player": "張宗益", "pick": 9}, {"year": 2011, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "陳皓然", "pick": 10}, {"year": 2011, "type": "一般選秀", "round": 3, "team": "Lamigo桃猿", "player": "王嘉誠", "pick": 11}, {"year": 2011, "type": "一般選秀", "round": 3, "team": "統一獅", "player": "羅國禎", "pick": 12}, {"year": 2011, "type": "一般選秀", "round": 4, "team": "興農牛", "player": "吳培輝", "pick": 13}, {"year": 2011, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "李祖岑", "pick": 14}, {"year": 2011, "type": "一般選秀", "round": 5, "team": "興農牛", "player": "紀榮家", "pick": 15}, {"year": 2011, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "陳弘桂", "pick": 16}, {"year": 2011, "type": "一般選秀", "round": 6, "team": "興農牛", "player": "黃伯楷", "pick": 17}, {"year": 2011, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "林育鴻", "pick": 18}, {"year": 2011, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "陳聯豐", "pick": 19}, {"year": 2011, "type": "一般選秀", "round": 8, "team": "兄弟象", "player": "沈岳澤", "pick": 20}, {"year": 2012, "type": "一般選秀", "round": 1, "team": "義大犀牛", "player": "胡金龍", "pick": 1}, {"year": 2012, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "陳鴻文", "pick": 2}, {"year": 2012, "type": "一般選秀", "round": 1, "team": "統一獅", "player": "羅錦龍", "pick": 3}, {"year": 2012, "type": "一般選秀", "round": 1, "team": "Lamigo桃猿", "player": "曾琮萱", "pick": 4}, {"year": 2012, "type": "一般選秀", "round": 2, "team": "義大犀牛", "player": "高國輝", "pick": 5}, {"year": 2012, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "王峻杰", "pick": 6}, {"year": 2012, "type": "一般選秀", "round": 2, "team": "統一獅", "player": "唐肇廷", "pick": 7}, {"year": 2012, "type": "一般選秀", "round": 2, "team": "Lamigo桃猿", "player": "林柏佑", "pick": 8}, {"year": 2012, "type": "一般選秀", "round": 3, "team": "義大犀牛", "player": "黃偉晟", "pick": 9}, {"year": 2012, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "王英山", "pick": 10}, {"year": 2012, "type": "一般選秀", "round": 3, "team": "統一獅", "player": "邱子愷", "pick": 11}, {"year": 2012, "type": "一般選秀", "round": 3, "team": "Lamigo桃猿", "player": "謝長融", "pick": 12}, {"year": 2012, "type": "一般選秀", "round": 4, "team": "義大犀牛", "player": "陽冠威", "pick": 13}, {"year": 2012, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "吳明旭", "pick": 14}, {"year": 2012, "type": "一般選秀", "round": 4, "team": "統一獅", "player": "江承峰", "pick": 15}, {"year": 2012, "type": "一般選秀", "round": 4, "team": "Lamigo桃猿", "player": "郭修延", "pick": 16}, {"year": 2012, "type": "一般選秀", "round": 5, "team": "義大犀牛", "player": "楊勝智", "pick": 17}, {"year": 2012, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "方玄宗", "pick": 18}, {"year": 2012, "type": "一般選秀", "round": 5, "team": "統一獅", "player": "何寬揚", "pick": 19}, {"year": 2012, "type": "一般選秀", "round": 5, "team": "Lamigo桃猿", "player": "陳秉村", "pick": 20}, {"year": 2012, "type": "一般選秀", "round": 6, "team": "義大犀牛", "player": "蔡森夫", "pick": 21}, {"year": 2012, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "黃梓育", "pick": 22}, {"year": 2012, "type": "一般選秀", "round": 6, "team": "Lamigo桃猿", "player": "蔡孟修", "pick": 23}, {"year": 2012, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "余書農", "pick": 24}, {"year": 2012, "type": "一般選秀", "round": 7, "team": "Lamigo桃猿", "player": "黃宗龍", "pick": 25}, {"year": 2012, "type": "一般選秀", "round": 8, "team": "Lamigo桃猿", "player": "吳培輝", "pick": 26}, {"year": 2012, "type": "一般選秀", "round": 9, "team": "Lamigo桃猿", "player": "郭文凱", "pick": 27}, {"year": 2013, "type": "一般選秀", "round": 1, "team": "兄弟象", "player": "鄭凱文", "pick": 1}, {"year": 2013, "type": "一般選秀", "round": 1, "team": "Lamigo桃猿", "player": "陳禹勳", "pick": 2}, {"year": 2013, "type": "一般選秀", "round": 1, "team": "義大犀牛", "player": "黃勝雄", "pick": 3}, {"year": 2013, "type": "一般選秀", "round": 2, "team": "兄弟象", "player": "謝榮豪", "pick": 4}, {"year": 2013, "type": "一般選秀", "round": 2, "team": "Lamigo桃猿", "player": "許銘傑", "pick": 5}, {"year": 2013, "type": "一般選秀", "round": 2, "team": "義大犀牛", "player": "林羿豪", "pick": 6}, {"year": 2013, "type": "一般選秀", "round": 3, "team": "兄弟象", "player": "林威助", "pick": 7}, {"year": 2013, "type": "一般選秀", "round": 3, "team": "Lamigo桃猿", "player": "劉時豪", "pick": 8}, {"year": 2013, "type": "一般選秀", "round": 3, "team": "義大犀牛", "player": "蕭一傑", "pick": 9}, {"year": 2013, "type": "一般選秀", "round": 4, "team": "兄弟象", "player": "王梓安", "pick": 10}, {"year": 2013, "type": "一般選秀", "round": 4, "team": "Lamigo桃猿", "player": "李國生", "pick": 11}, {"year": 2013, "type": "一般選秀", "round": 4, "team": "義大犀牛", "player": "林威廷", "pick": 12}, {"year": 2013, "type": "一般選秀", "round": 4, "team": "統一獅", "player": "羅國龍", "pick": 13}, {"year": 2013, "type": "一般選秀", "round": 5, "team": "兄弟象", "player": "陳家駒", "pick": 14}, {"year": 2013, "type": "一般選秀", "round": 5, "team": "Lamigo桃猿", "player": "郭勝安", "pick": 15}, {"year": 2013, "type": "一般選秀", "round": 5, "team": "義大犀牛", "player": "簡嘉佑", "pick": 16}, {"year": 2013, "type": "一般選秀", "round": 5, "team": "統一獅", "player": "賴泊凱", "pick": 17}, {"year": 2013, "type": "一般選秀", "round": 6, "team": "兄弟象", "player": "江信德", "pick": 18}, {"year": 2013, "type": "一般選秀", "round": 6, "team": "Lamigo桃猿", "player": "林國裕", "pick": 19}, {"year": 2013, "type": "一般選秀", "round": 6, "team": "義大犀牛", "player": "方玄宗", "pick": 20}, {"year": 2013, "type": "一般選秀", "round": 6, "team": "統一獅", "player": "薛惟中", "pick": 21}, {"year": 2013, "type": "一般選秀", "round": 7, "team": "兄弟象", "player": "黃思漢", "pick": 22}, {"year": 2013, "type": "一般選秀", "round": 7, "team": "Lamigo桃猿", "player": "藍寅倫", "pick": 23}, {"year": 2013, "type": "一般選秀", "round": 7, "team": "義大犀牛", "player": "黃柏揚", "pick": 24}, {"year": 2013, "type": "一般選秀", "round": 7, "team": "統一獅", "player": "張耀文", "pick": 25}, {"year": 2013, "type": "一般選秀", "round": 8, "team": "兄弟象", "player": "郭峰竣", "pick": 26}, {"year": 2013, "type": "一般選秀", "round": 8, "team": "Lamigo桃猿", "player": "許禹壕", "pick": 27}, {"year": 2013, "type": "一般選秀", "round": 8, "team": "義大犀牛", "player": "林憲章", "pick": 28}, {"year": 2013, "type": "一般選秀", "round": 8, "team": "統一獅", "player": "方昶詠", "pick": 29}, {"year": 2013, "type": "一般選秀", "round": 9, "team": "義大犀牛", "player": "高孝儀", "pick": 30}, {"year": 2013, "type": "一般選秀", "round": 10, "team": "義大犀牛", "player": "林丹盛", "pick": 31}, {"year": 2013, "type": "高中生選秀", "round": 1, "team": "Lamigo桃猿", "player": "梁家榮", "pick": 1}, {"year": 2013, "type": "高中生選秀", "round": 1, "team": "統一獅", "player": "江辰晏", "pick": 2}, {"year": 2013, "type": "高中生選秀", "round": 1, "team": "兄弟象", "player": "李啟文", "pick": 3}, {"year": 2013, "type": "高中生選秀", "round": 1, "team": "義大犀牛", "player": "范玉禹", "pick": 4}, {"year": 2013, "type": "高中生選秀", "round": 2, "team": "Lamigo桃猿", "player": "朱俊祥", "pick": 5}, {"year": 2013, "type": "高中生選秀", "round": 2, "team": "統一獅", "player": "黃靖幃", "pick": 6}, {"year": 2013, "type": "高中生選秀", "round": 2, "team": "兄弟象", "player": "陳子豪", "pick": 7}, {"year": 2013, "type": "高中生選秀", "round": 2, "team": "義大犀牛", "player": "林樺慶", "pick": 8}, {"year": 2013, "type": "高中生選秀", "round": 3, "team": "Lamigo桃猿", "player": "王朝民", "pick": 9}, {"year": 2013, "type": "高中生選秀", "round": 3, "team": "統一獅", "player": "張竣凱", "pick": 10}, {"year": 2013, "type": "高中生選秀", "round": 3, "team": "兄弟象", "player": "王則鈞", "pick": 11}, {"year": 2013, "type": "高中生選秀", "round": 4, "team": "統一獅", "player": "李文傑", "pick": 12}, {"year": 2013, "type": "高中生選秀", "round": 4, "team": "兄弟象", "player": "蔡瑋泰", "pick": 13}, {"year": 2014, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "江忠城", "pick": 1}, {"year": 2014, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "陳俊秀", "pick": 2}, {"year": 2014, "type": "季中選秀", "round": 1, "team": "義大犀牛", "player": "羅嘉仁", "pick": 3}, {"year": 2014, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "陳韻文", "pick": 4}, {"year": 2014, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "許基宏", "pick": 5}, {"year": 2014, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "林樺慶", "pick": 6}, {"year": 2014, "type": "季中選秀", "round": 2, "team": "義大犀牛", "player": "林旺衛", "pick": 7}, {"year": 2014, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "楊家維", "pick": 8}, {"year": 2014, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "黃玉璽", "pick": 9}, {"year": 2014, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "董子浩", "pick": 10}, {"year": 2014, "type": "季中選秀", "round": 3, "team": "義大犀牛", "player": "蔡欣宏", "pick": 11}, {"year": 2014, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "郭峻偉", "pick": 12}, {"year": 2014, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "杜家明", "pick": 13}, {"year": 2014, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "洪聖欽", "pick": 14}, {"year": 2014, "type": "季中選秀", "round": 4, "team": "義大犀牛", "player": "陳冠儒", "pick": 15}, {"year": 2014, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "吳國豪", "pick": 16}, {"year": 2014, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "張志強", "pick": 17}, {"year": 2014, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "張煒謙", "pick": 18}, {"year": 2014, "type": "季中選秀", "round": 5, "team": "義大犀牛", "player": "黃思漢", "pick": 19}, {"year": 2014, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "邱浩鈞", "pick": 20}, {"year": 2014, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "林王啟瑋", "pick": 21}, {"year": 2014, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "紀品宏", "pick": 22}, {"year": 2014, "type": "季中選秀", "round": 6, "team": "義大犀牛", "player": "蔡友達", "pick": 23}, {"year": 2014, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "王朝民", "pick": 24}, {"year": 2014, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "蔡益民", "pick": 25}, {"year": 2014, "type": "季中選秀", "round": 7, "team": "義大犀牛", "player": "黃義坤", "pick": 26}, {"year": 2014, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "周聖訓", "pick": 27}, {"year": 2014, "type": "季中選秀", "round": 8, "team": "義大犀牛", "player": "曾冠儒", "pick": 28}, {"year": 2014, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "陳偉漢", "pick": 29}, {"year": 2014, "type": "季中選秀", "round": 9, "team": "義大犀牛", "player": "楊智喬", "pick": 30}, {"year": 2014, "type": "季中選秀", "round": 10, "team": "義大犀牛", "player": "楊承駿", "pick": 31}, {"year": 2015, "type": "季中選秀", "round": 1, "team": "義大犀牛", "player": "林哲瑄", "pick": 1}, {"year": 2015, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "林子崴", "pick": 2}, {"year": 2015, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "蔣智賢", "pick": 3}, {"year": 2015, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "王柏融", "pick": 4}, {"year": 2015, "type": "季中選秀", "round": 2, "team": "義大犀牛", "player": "倪福德", "pick": 5}, {"year": 2015, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "宋家豪", "pick": 6}, {"year": 2015, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "潘志芳", "pick": 7}, {"year": 2015, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "林承飛", "pick": 8}, {"year": 2015, "type": "季中選秀", "round": 3, "team": "義大犀牛", "player": "黃亦志", "pick": 9}, {"year": 2015, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "鄭鎧文", "pick": 10}, {"year": 2015, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "彭識穎", "pick": 11}, {"year": 2015, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "葉文淇", "pick": 12}, {"year": 2015, "type": "季中選秀", "round": 4, "team": "義大犀牛", "player": "于孟雄", "pick": 13}, {"year": 2015, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "林志賢", "pick": 14}, {"year": 2015, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "張凱倫", "pick": 15}, {"year": 2015, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "游宗儒", "pick": 16}, {"year": 2015, "type": "季中選秀", "round": 5, "team": "義大犀牛", "player": "羅華韋", "pick": 17}, {"year": 2015, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "蔡奕玄", "pick": 18}, {"year": 2015, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "蘇緯達", "pick": 19}, {"year": 2015, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "蘇俊羽", "pick": 20}, {"year": 2015, "type": "季中選秀", "round": 6, "team": "義大犀牛", "player": "林政賢", "pick": 21}, {"year": 2015, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "郭力瑋", "pick": 22}, {"year": 2015, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "潘韋辰", "pick": 23}, {"year": 2015, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "王躍霖", "pick": 24}, {"year": 2015, "type": "季中選秀", "round": 7, "team": "義大犀牛", "player": "林威廷", "pick": 25}, {"year": 2015, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "郭阜林", "pick": 26}, {"year": 2015, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "林明杰", "pick": 27}, {"year": 2015, "type": "季中選秀", "round": 7, "team": "Lamigo桃猿", "player": "朱育賢", "pick": 28}, {"year": 2015, "type": "季中選秀", "round": 8, "team": "義大犀牛", "player": "羅國麟", "pick": 29}, {"year": 2015, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "郭恆孝", "pick": 30}, {"year": 2015, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "周磊", "pick": 31}, {"year": 2015, "type": "季中選秀", "round": 8, "team": "Lamigo桃猿", "player": "陳敏賜", "pick": 32}, {"year": 2015, "type": "季中選秀", "round": 9, "team": "義大犀牛", "player": "彭世杰", "pick": 33}, {"year": 2015, "type": "季中選秀", "round": 9, "team": "統一7-ELEVEn獅", "player": "江亮緯", "pick": 34}, {"year": 2015, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "歐耀宗", "pick": 35}, {"year": 2015, "type": "季中選秀", "round": 9, "team": "Lamigo桃猿", "player": "張明翔", "pick": 36}, {"year": 2015, "type": "季中選秀", "round": 10, "team": "義大犀牛", "player": "石翔宇", "pick": 37}, {"year": 2015, "type": "季中選秀", "round": 10, "team": "統一7-ELEVEn獅", "player": "莊駿凱", "pick": 38}, {"year": 2015, "type": "季中選秀", "round": 10, "team": "中信兄弟", "player": "曾陶鎔", "pick": 39}, {"year": 2015, "type": "季中選秀", "round": 10, "team": "Lamigo桃猿", "player": "王詮宏", "pick": 40}, {"year": 2015, "type": "季中選秀", "round": 11, "team": "義大犀牛", "player": "陳泓亦", "pick": 41}, {"year": 2015, "type": "季中選秀", "round": 11, "team": "中信兄弟", "player": "劉軒荅", "pick": 42}, {"year": 2015, "type": "季中選秀", "round": 11, "team": "Lamigo桃猿", "player": "嚴宏鈞", "pick": 43}, {"year": 2015, "type": "季中選秀", "round": 12, "team": "中信兄弟", "player": "甘少康", "pick": 44}, {"year": 2015, "type": "季中選秀", "round": 13, "team": "中信兄弟", "player": "王威晨", "pick": 45}, {"year": 2015, "type": "季中選秀", "round": 14, "team": "中信兄弟", "player": "許皓傑", "pick": 46}, {"year": 2016, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "蘇智傑", "pick": 1}, {"year": 2016, "type": "季中選秀", "round": 1, "team": "義大犀牛", "player": "申皓瑋", "pick": 2}, {"year": 2016, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "陳琥", "pick": 3}, {"year": 2016, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "張閔勛", "pick": 4}, {"year": 2016, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "陳傑憲", "pick": 5}, {"year": 2016, "type": "季中選秀", "round": 2, "team": "義大犀牛", "player": "陳仕朋", "pick": 6}, {"year": 2016, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "詹子賢", "pick": 7}, {"year": 2016, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "楊岱均", "pick": 8}, {"year": 2016, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "陳育軒", "pick": 9}, {"year": 2016, "type": "季中選秀", "round": 3, "team": "義大犀牛", "player": "李宗賢", "pick": 10}, {"year": 2016, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "楊志龍", "pick": 11}, {"year": 2016, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "劉昱言", "pick": 12}, {"year": 2016, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "王玉譜", "pick": 13}, {"year": 2016, "type": "季中選秀", "round": 4, "team": "義大犀牛", "player": "陳明軒", "pick": 14}, {"year": 2016, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "吳東融", "pick": 15}, {"year": 2016, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "森榮鴻", "pick": 16}, {"year": 2016, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "潘彥廷", "pick": 17}, {"year": 2016, "type": "季中選秀", "round": 5, "team": "義大犀牛", "player": "張冠廷", "pick": 18}, {"year": 2016, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "林書逸", "pick": 19}, {"year": 2016, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "馮健庭", "pick": 20}, {"year": 2016, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "林威志", "pick": 21}, {"year": 2016, "type": "季中選秀", "round": 6, "team": "義大犀牛", "player": "吳蔚驊", "pick": 22}, {"year": 2016, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "陳子鴻", "pick": 23}, {"year": 2016, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "江忠垣", "pick": 24}, {"year": 2016, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "林航", "pick": 25}, {"year": 2016, "type": "季中選秀", "round": 7, "team": "義大犀牛", "player": "劉家愷", "pick": 26}, {"year": 2016, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "陳文杰", "pick": 27}, {"year": 2016, "type": "季中選秀", "round": 7, "team": "Lamigo桃猿", "player": "鄭佳銘", "pick": 28}, {"year": 2016, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "洪心騏", "pick": 29}, {"year": 2016, "type": "季中選秀", "round": 8, "team": "義大犀牛", "player": "吳筌宏", "pick": 30}, {"year": 2016, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "李吳永衡", "pick": 31}, {"year": 2016, "type": "季中選秀", "round": 8, "team": "Lamigo桃猿", "player": "林知譽", "pick": 32}, {"year": 2016, "type": "季中選秀", "round": 9, "team": "義大犀牛", "player": "林志洋", "pick": 33}, {"year": 2016, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "黃稚峰", "pick": 34}, {"year": 2016, "type": "季中選秀", "round": 10, "team": "義大犀牛", "player": "潘庭豐", "pick": 35}, {"year": 2016, "type": "季中選秀", "round": 10, "team": "中信兄弟", "player": "吳哲源", "pick": 36}, {"year": 2017, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "廖健富", "pick": 1}, {"year": 2017, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "陳重羽", "pick": 2}, {"year": 2017, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "岳東華", "pick": 3}, {"year": 2017, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "楊晉豪", "pick": 4}, {"year": 2017, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "林立", "pick": 5}, {"year": 2017, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "陳重廷", "pick": 6}, {"year": 2017, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "黃恩賜", "pick": 7}, {"year": 2017, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "陳品捷", "pick": 8}, {"year": 2017, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "成晉", "pick": 9}, {"year": 2017, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "施子謙", "pick": 10}, {"year": 2017, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "陳柏豪", "pick": 11}, {"year": 2017, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "羅國華", "pick": 12}, {"year": 2017, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "萬昭清", "pick": 13}, {"year": 2017, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "吳桀睿", "pick": 14}, {"year": 2017, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "蔡齊哲", "pick": 15}, {"year": 2017, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "吳世豪", "pick": 16}, {"year": 2017, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "林逸翔", "pick": 17}, {"year": 2017, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "黃竣彥", "pick": 18}, {"year": 2017, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "吳明鴻", "pick": 19}, {"year": 2017, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "范國宸", "pick": 20}, {"year": 2017, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "吳丞哲", "pick": 21}, {"year": 2017, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "賴奕成", "pick": 22}, {"year": 2017, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "王鴻程", "pick": 23}, {"year": 2017, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "陳韋奇", "pick": 24}, {"year": 2017, "type": "季中選秀", "round": 7, "team": "Lamigo桃猿", "player": "黃子鵬", "pick": 25}, {"year": 2017, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "林勝傑", "pick": 26}, {"year": 2017, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "楊達翔", "pick": 27}, {"year": 2017, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "陳勤宗", "pick": 28}, {"year": 2017, "type": "季中選秀", "round": 8, "team": "Lamigo桃猿", "player": "黃敬瑋", "pick": 29}, {"year": 2017, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "鄭鈞仁", "pick": 30}, {"year": 2017, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "鄭佳彥", "pick": 31}, {"year": 2017, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "蔡岱霖", "pick": 32}, {"year": 2017, "type": "季中選秀", "round": 10, "team": "中信兄弟", "player": "吳蔚驊", "pick": 33}, {"year": 2018, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "戴培峰", "pick": 1}, {"year": 2018, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "古林睿煬", "pick": 2}, {"year": 2018, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "李振昌", "pick": 3}, {"year": 2018, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "翁瑋均", "pick": 4}, {"year": 2018, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "王正棠", "pick": 5}, {"year": 2018, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "張偉聖", "pick": 6}, {"year": 2018, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "高宇杰", "pick": 7}, {"year": 2018, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "陳晨威", "pick": 8}, {"year": 2018, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "陳品學", "pick": 9}, {"year": 2018, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "劉軒荅", "pick": 10}, {"year": 2018, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "江坤宇", "pick": 11}, {"year": 2018, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "邱丹", "pick": 12}, {"year": 2018, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "胡冠俞", "pick": 13}, {"year": 2018, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "李丞齡", "pick": 14}, {"year": 2018, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "吳俊偉", "pick": 15}, {"year": 2018, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "賴智垣", "pick": 16}, {"year": 2018, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "王尉永", "pick": 17}, {"year": 2018, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "方建德", "pick": 18}, {"year": 2018, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "王奕凱", "pick": 19}, {"year": 2018, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "陳克羿", "pick": 20}, {"year": 2018, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "楊彬", "pick": 21}, {"year": 2018, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "林靖凱", "pick": 22}, {"year": 2018, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "王政順", "pick": 23}, {"year": 2018, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "江國謙", "pick": 24}, {"year": 2018, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "王詩聰", "pick": 25}, {"year": 2018, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "姚雨翔", "pick": 26}, {"year": 2018, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "林丞軒", "pick": 27}, {"year": 2018, "type": "季中選秀", "round": 7, "team": "Lamigo桃猿", "player": "范柏絜", "pick": 28}, {"year": 2018, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "歐書誠", "pick": 29}, {"year": 2018, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "吳俊杰", "pick": 30}, {"year": 2018, "type": "季中選秀", "round": 9, "team": "富邦悍將", "player": "蕭憶銘", "pick": 31}, {"year": 2018, "type": "季中選秀", "round": 10, "team": "富邦悍將", "player": "曾慈恩", "pick": 32}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "劉基鴻", "pick": 1}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "徐若熙", "pick": 2}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "岳政華", "pick": 3}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "江國豪", "pick": 4}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "林安可", "pick": 5}, {"year": 2019, "type": "季中選秀", "round": 1, "team": "Lamigo桃猿", "player": "蘇俊璋", "pick": 6}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "李凱威", "pick": 7}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "朱祥麟", "pick": 8}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "魏碩成", "pick": 9}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "朱益生", "pick": 10}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "羅暐捷", "pick": 11}, {"year": 2019, "type": "季中選秀", "round": 2, "team": "Lamigo桃猿", "player": "李承禎", "pick": 12}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "曾傳昇", "pick": 13}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "郭天信", "pick": 14}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "曾頌恩", "pick": 15}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "林聖榮", "pick": 16}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "吳承諭", "pick": 17}, {"year": 2019, "type": "季中選秀", "round": 3, "team": "Lamigo桃猿", "player": "林澤彬", "pick": 18}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "吳俊杰", "pick": 19}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "郭郁政", "pick": 20}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "張聖豪", "pick": 21}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "姚冠瑋", "pick": 22}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "柯育民", "pick": 23}, {"year": 2019, "type": "季中選秀", "round": 4, "team": "Lamigo桃猿", "player": "曾琦", "pick": 24}, {"year": 2019, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "林子昱", "pick": 25}, {"year": 2019, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "黃弘毅", "pick": 26}, {"year": 2019, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "林奕豪", "pick": 27}, {"year": 2019, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "邱智呈", "pick": 28}, {"year": 2019, "type": "季中選秀", "round": 5, "team": "Lamigo桃猿", "player": "張喜凱", "pick": 29}, {"year": 2019, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "森榮鴻", "pick": 30}, {"year": 2019, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "劉劭威", "pick": 31}, {"year": 2019, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "戴云真", "pick": 32}, {"year": 2019, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "黃紹熙", "pick": 33}, {"year": 2019, "type": "季中選秀", "round": 6, "team": "Lamigo桃猿", "player": "莊昕諺", "pick": 34}, {"year": 2019, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "張政禹", "pick": 35}, {"year": 2019, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "林瑞鈞", "pick": 36}, {"year": 2019, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "葉國情", "pick": 37}, {"year": 2019, "type": "季中選秀", "round": 7, "team": "Lamigo桃猿", "player": "楊瑞承", "pick": 38}, {"year": 2019, "type": "季中選秀", "round": 8, "team": "味全龍", "player": "蔡明憲", "pick": 39}, {"year": 2019, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "邱志恆", "pick": 40}, {"year": 2019, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "楊程皓", "pick": 41}, {"year": 2019, "type": "季中選秀", "round": 9, "team": "味全龍", "player": "呂偉晟", "pick": 42}, {"year": 2019, "type": "季中選秀", "round": 9, "team": "富邦悍將", "player": "辛元旭", "pick": 43}, {"year": 2019, "type": "季中選秀", "round": 10, "team": "味全龍", "player": "莊玉彬", "pick": 44}, {"year": 2019, "type": "季中選秀", "round": 10, "team": "富邦悍將", "player": "李建勳", "pick": 45}, {"year": 2019, "type": "季中選秀", "round": 11, "team": "味全龍", "player": "全浩瑋", "pick": 46}, {"year": 2019, "type": "季中選秀", "round": 12, "team": "味全龍", "player": "洪瑋漢", "pick": 47}, {"year": 2019, "type": "季中選秀", "round": 13, "team": "味全龍", "player": "林孝程", "pick": 48}, {"year": 2019, "type": "季中選秀", "round": 14, "team": "味全龍", "player": "黃東淯", "pick": 49}, {"year": 2019, "type": "季中選秀", "round": 15, "team": "味全龍", "player": "張祐銘", "pick": 50}, {"year": 2019, "type": "季中選秀", "round": 16, "team": "味全龍", "player": "黃柏豪", "pick": 51}, {"year": 2019, "type": "季中選秀", "round": 17, "team": "味全龍", "player": "陳冠偉", "pick": 52}, {"year": 2019, "type": "季中選秀", "round": 18, "team": "味全龍", "player": "牛塏曄", "pick": 53}, {"year": 2019, "type": "季中選秀", "round": 19, "team": "味全龍", "player": "李宇翔", "pick": 54}, {"year": 2019, "type": "季中選秀", "round": 20, "team": "味全龍", "player": "曾柏融", "pick": 55}, {"year": 2019, "type": "季中選秀", "round": 21, "team": "味全龍", "player": "陳震洋", "pick": 56}, {"year": 2019, "type": "季中選秀", "round": 22, "team": "味全龍", "player": "劉宇鈞", "pick": 57}, {"year": 2019, "type": "季中選秀", "round": 23, "team": "味全龍", "player": "張皓緯", "pick": 58}, {"year": 2019, "type": "季中選秀", "round": 24, "team": "味全龍", "player": "林驛騰", "pick": 59}, {"year": 2019, "type": "季中選秀", "round": 25, "team": "味全龍", "player": "陳良志", "pick": 60}, {"year": 2019, "type": "季中選秀", "round": 26, "team": "味全龍", "player": "歐晉", "pick": 61}, {"year": 2019, "type": "季中選秀", "round": 27, "team": "味全龍", "player": "高淮安", "pick": 62}, {"year": 2019, "type": "季中選秀", "round": 28, "team": "味全龍", "player": "魏全", "pick": 63}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "王維中", "pick": 1}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "廖任磊", "pick": 2}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "林子豪", "pick": 3}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "張進德", "pick": 4}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "余謙", "pick": 5}, {"year": 2020, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "馬傑森", "pick": 6}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "林辰勳", "pick": 7}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "林逸達", "pick": 8}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "何恆佑", "pick": 9}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "郭俊麟", "pick": 10}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "宋晟睿", "pick": 11}, {"year": 2020, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "林子崴", "pick": 12}, {"year": 2020, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "楊鈺翔", "pick": 13}, {"year": 2020, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "劉予承", "pick": 14}, {"year": 2020, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "陳真", "pick": 15}, {"year": 2020, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "馬鋼", "pick": 16}, {"year": 2020, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "許峻暘", "pick": 17}, {"year": 2020, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "王順和", "pick": 18}, {"year": 2020, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "李其峰", "pick": 19}, {"year": 2020, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "莊韋恩", "pick": 20}, {"year": 2020, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "林志綱", "pick": 21}, {"year": 2020, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "林政華", "pick": 22}, {"year": 2020, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "蔣少宏", "pick": 23}, {"year": 2020, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "姚杰宏", "pick": 24}, {"year": 2020, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "林詠翔", "pick": 25}, {"year": 2020, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "林吳晉瑋", "pick": 26}, {"year": 2020, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "王志煊", "pick": 27}, {"year": 2020, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "呂詠臻", "pick": 28}, {"year": 2020, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "許哲晏", "pick": 29}, {"year": 2020, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "黃兆維", "pick": 30}, {"year": 2020, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "黃韋盛", "pick": 31}, {"year": 2020, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "邱家慶", "pick": 32}, {"year": 2020, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "劉崇聖", "pick": 33}, {"year": 2020, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "林原裕", "pick": 34}, {"year": 2020, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "曾峻岳", "pick": 35}, {"year": 2020, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "劉嘉益", "pick": 36}, {"year": 2020, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "何逸龍", "pick": 37}, {"year": 2020, "type": "季中選秀", "round": 8, "team": "味全龍", "player": "董秉軒", "pick": 38}, {"year": 2020, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "張肇元", "pick": 39}, {"year": 2020, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "許宸銘", "pick": 40}, {"year": 2020, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "曾家鈜", "pick": 41}, {"year": 2020, "type": "季中選秀", "round": 8, "team": "樂天桃猿", "player": "林楷錡", "pick": 42}, {"year": 2020, "type": "季中選秀", "round": 9, "team": "味全龍", "player": "趙璟榮", "pick": 43}, {"year": 2020, "type": "季中選秀", "round": 9, "team": "統一7-ELEVEn獅", "player": "李慶隆", "pick": 44}, {"year": 2020, "type": "季中選秀", "round": 9, "team": "富邦悍將", "player": "周奕丞", "pick": 45}, {"year": 2020, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "劉貴元", "pick": 46}, {"year": 2020, "type": "季中選秀", "round": 9, "team": "樂天桃猿", "player": "蔡鎮宇", "pick": 47}, {"year": 2020, "type": "季中選秀", "round": 10, "team": "統一7-ELEVEn獅", "player": "楊淳弼", "pick": 48}, {"year": 2021, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "江少慶", "pick": 1}, {"year": 2021, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "陳冠宇", "pick": 2}, {"year": 2021, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "呂彥青", "pick": 3}, {"year": 2021, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "胡智為", "pick": 4}, {"year": 2021, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "吉力吉撈·鞏冠", "pick": 5}, {"year": 2021, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "王苡丞", "pick": 6}, {"year": 2021, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "邱駿威", "pick": 7}, {"year": 2021, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "陳志杰", "pick": 8}, {"year": 2021, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "張翔", "pick": 9}, {"year": 2021, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "曹祐齊", "pick": 10}, {"year": 2021, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "董子恩", "pick": 11}, {"year": 2021, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "曾仁和", "pick": 12}, {"year": 2021, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "張仁瑋", "pick": 13}, {"year": 2021, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "劉志宏", "pick": 14}, {"year": 2021, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "李展毅", "pick": 15}, {"year": 2021, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "孔念恩", "pick": 16}, {"year": 2021, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "鍾玉成", "pick": 17}, {"year": 2021, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "周委宏", "pick": 18}, {"year": 2021, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "楊竣翔", "pick": 19}, {"year": 2021, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "吳秉恩", "pick": 20}, {"year": 2021, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "李子強", "pick": 21}, {"year": 2021, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "賴知頎", "pick": 22}, {"year": 2021, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "陳統恩", "pick": 23}, {"year": 2021, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "李承鴻", "pick": 24}, {"year": 2021, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "張鈞守", "pick": 25}, {"year": 2021, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "楊強森", "pick": 26}, {"year": 2021, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "毛英傑", "pick": 27}, {"year": 2021, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "李家成", "pick": 28}, {"year": 2021, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "楊孟沅", "pick": 29}, {"year": 2021, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "陳思仲", "pick": 30}, {"year": 2021, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "張宥鈞", "pick": 31}, {"year": 2021, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "張梓軒", "pick": 32}, {"year": 2021, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "黃鈞麟", "pick": 33}, {"year": 2021, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "謝修銓", "pick": 34}, {"year": 2021, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "邱辰", "pick": 35}, {"year": 2021, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "岳少華", "pick": 36}, {"year": 2021, "type": "季中選秀", "round": 8, "team": "樂天桃猿", "player": "楊家勝", "pick": 37}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "曾子祐", "pick": 1}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "伍祐城", "pick": 2}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "林凱威", "pick": 3}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "黃保羅", "pick": 4}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "宋嘉翔", "pick": 5}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "黃勇傳", "pick": 6}, {"year": 2022, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "鄭浩均", "pick": 7}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "紀慶然", "pick": 8}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "謝葆錡", "pick": 9}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "冉承霖", "pick": 10}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "潘奕誠", "pick": 11}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "陳佳樂", "pick": 12}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "林培緯", "pick": 13}, {"year": 2022, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "徐基麟", "pick": 14}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "廖奕安", "pick": 15}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "顏清泓", "pick": 16}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "吳君奕", "pick": 17}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "池恩齊", "pick": 18}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "劉家翔", "pick": 19}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "林詔恩", "pick": 20}, {"year": 2022, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "馮皓", "pick": 21}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "林家鋐", "pick": 22}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "黃紹睿", "pick": 23}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "林子宸", "pick": 24}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "蔡佳諺", "pick": 25}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "邱緯綸", "pick": 26}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "宋文華", "pick": 27}, {"year": 2022, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "阮裕智", "pick": 28}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "台鋼雄鷹", "player": "陳宇宏", "pick": 29}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "鄭亦軒", "pick": 30}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "林岳谷", "pick": 31}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "林耀煌", "pick": 32}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "尹柏淮", "pick": 33}, {"year": 2022, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "盧孟揚", "pick": 34}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "台鋼雄鷹", "player": "黃劼希", "pick": 35}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "許元泰", "pick": 36}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "周佳樂", "pick": 37}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "董順傑", "pick": 38}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "田子杰", "pick": 39}, {"year": 2022, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "陳柏均", "pick": 40}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "台鋼雄鷹", "player": "高聖恩", "pick": 41}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "藍翊誠", "pick": 42}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "林栚呈", "pick": 43}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "洪敏暘", "pick": 44}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "鄭副豪", "pick": 45}, {"year": 2022, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "張祖恩", "pick": 46}, {"year": 2022, "type": "季中選秀", "round": 8, "team": "台鋼雄鷹", "player": "陳柏清", "pick": 47}, {"year": 2022, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "郭泰呈", "pick": 48}, {"year": 2022, "type": "季中選秀", "round": 8, "team": "樂天桃猿", "player": "舒治浩", "pick": 49}, {"year": 2022, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "潘磊", "pick": 50}, {"year": 2022, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "潘泓凱", "pick": 51}, {"year": 2022, "type": "季中選秀", "round": 9, "team": "台鋼雄鷹", "player": "曾品洋", "pick": 52}, {"year": 2022, "type": "季中選秀", "round": 9, "team": "富邦悍將", "player": "黃子宸", "pick": 53}, {"year": 2022, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "李承恩", "pick": 54}, {"year": 2022, "type": "季中選秀", "round": 10, "team": "台鋼雄鷹", "player": "陳翊瑄", "pick": 55}, {"year": 2022, "type": "季中選秀", "round": 11, "team": "台鋼雄鷹", "player": "鄧佳安", "pick": 56}, {"year": 2022, "type": "季中選秀", "round": 12, "team": "台鋼雄鷹", "player": "曾宸佐", "pick": 57}, {"year": 2022, "type": "季中選秀", "round": 13, "team": "台鋼雄鷹", "player": "陳致嘉", "pick": 58}, {"year": 2022, "type": "季中選秀", "round": 14, "team": "台鋼雄鷹", "player": "馬許晧", "pick": 59}, {"year": 2022, "type": "季中選秀", "round": 15, "team": "台鋼雄鷹", "player": "黃秉揚", "pick": 60}, {"year": 2022, "type": "季中選秀", "round": 16, "team": "台鋼雄鷹", "player": "陳冠豪", "pick": 61}, {"year": 2022, "type": "季中選秀", "round": 17, "team": "台鋼雄鷹", "player": "蕭柏頤", "pick": 62}, {"year": 2022, "type": "季中選秀", "round": 18, "team": "台鋼雄鷹", "player": "李欣穎", "pick": 63}, {"year": 2022, "type": "季中選秀", "round": 19, "team": "台鋼雄鷹", "player": "巴奇達魯·妮卡兒", "pick": 64}, {"year": 2022, "type": "季中選秀", "round": 20, "team": "台鋼雄鷹", "player": "孫易伸", "pick": 65}, {"year": 2022, "type": "季中選秀", "round": 21, "team": "台鋼雄鷹", "player": "王博玄", "pick": 66}, {"year": 2022, "type": "季中選秀", "round": 22, "team": "台鋼雄鷹", "player": "林建宏", "pick": 67}, {"year": 2022, "type": "季中選秀", "round": 23, "team": "台鋼雄鷹", "player": "許育銘", "pick": 68}, {"year": 2022, "type": "季中選秀", "round": 24, "team": "台鋼雄鷹", "player": "陳正毅", "pick": 69}, {"year": 2022, "type": "季中選秀", "round": 25, "team": "台鋼雄鷹", "player": "邱邦", "pick": 70}, {"year": 2022, "type": "季中選秀", "round": 26, "team": "台鋼雄鷹", "player": "林威漢", "pick": 71}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "林子偉", "pick": 1}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "王柏傑", "pick": 2}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "王念好", "pick": 3}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "林佳緯", "pick": 4}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "劉俊緯", "pick": 5}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "邱鑫", "pick": 6}, {"year": 2023, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "林暉盛", "pick": 7}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "陳飛霖", "pick": 8}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "陳世嘉", "pick": 9}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "陳聖文", "pick": 10}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "林泓弦", "pick": 11}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "張景淯", "pick": 12}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "林華偉", "pick": 13}, {"year": 2023, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "徐博瑋", "pick": 14}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "張誠恩", "pick": 15}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "林旺熙", "pick": 16}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "辛俊昇", "pick": 17}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "姚恩多", "pick": 18}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "賴胤豪", "pick": 19}, {"year": 2023, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "張士綸", "pick": 20}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "曾奕翔", "pick": 21}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "高捷", "pick": 22}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "余羿賢", "pick": 23}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "黃侰程", "pick": 24}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "曾家輝", "pick": 25}, {"year": 2023, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "胡孟智", "pick": 26}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "台鋼雄鷹", "player": "巫柏葳", "pick": 27}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "林育辰", "pick": 28}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "周彥農", "pick": 29}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "陽念祖", "pick": 30}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "李勛傑", "pick": 31}, {"year": 2023, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "楊祥禾", "pick": 32}, {"year": 2023, "type": "季中選秀", "round": 6, "team": "台鋼雄鷹", "player": "林詩翔", "pick": 33}, {"year": 2023, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "李祐賢", "pick": 34}, {"year": 2023, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "張皓崴", "pick": 35}, {"year": 2023, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "林柏佑", "pick": 36}, {"year": 2023, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "杜禹鋒", "pick": 37}, {"year": 2023, "type": "季中選秀", "round": 7, "team": "台鋼雄鷹", "player": "郭俞延", "pick": 38}, {"year": 2023, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "陳愷佑", "pick": 39}, {"year": 2023, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "鄭澔", "pick": 40}, {"year": 2023, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "郭玟毅", "pick": 41}, {"year": 2023, "type": "季中選秀", "round": 8, "team": "台鋼雄鷹", "player": "黃群", "pick": 42}, {"year": 2023, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "林莛淯", "pick": 43}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "張育成", "pick": 1}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "吳念庭", "pick": 2}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "許庭綸", "pick": 3}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "陳聖平", "pick": 4}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "張趙紘", "pick": 5}, {"year": 2024, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "曾聖安", "pick": 6}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "張奕", "pick": 7}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "黃子豪", "pick": 8}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "伍立辰", "pick": 9}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "張宥謙", "pick": 10}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "何品室融", "pick": 11}, {"year": 2024, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "李致霖", "pick": 12}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "陳鐿中", "pick": 13}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "宋柏翰", "pick": 14}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "陳冠穎", "pick": 15}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "鍾允華", "pick": 16}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "曾冠傑", "pick": 17}, {"year": 2024, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "黃贊維", "pick": 18}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "陳品宏", "pick": 19}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "曾昱磬", "pick": 20}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "徐紹予", "pick": 21}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "全紹凱", "pick": 22}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "王宇翔", "pick": 23}, {"year": 2024, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "薛毓達", "pick": 24}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "盧柏華", "pick": 25}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "台鋼雄鷹", "player": "陳重光", "pick": 26}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "劉亦智", "pick": 27}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "林易霆", "pick": 28}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "游承勳", "pick": 29}, {"year": 2024, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "劉曜豪", "pick": 30}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "楊閔貽", "pick": 31}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "台鋼雄鷹", "player": "方郁淮", "pick": 32}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "鄧朝駿", "pick": 33}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "高塩將樹", "pick": 34}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "賴威誠", "pick": 35}, {"year": 2024, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "許博閎", "pick": 36}, {"year": 2024, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "黃英奇", "pick": 37}, {"year": 2024, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "陳九登", "pick": 38}, {"year": 2024, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "李軍", "pick": 39}, {"year": 2024, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "李家明", "pick": 40}, {"year": 2024, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "許子謙", "pick": 41}, {"year": 2024, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "潘瑋祥", "pick": 42}, {"year": 2024, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "朱宏樺", "pick": 43}, {"year": 2024, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "陳維祥", "pick": 44}, {"year": 2024, "type": "季中選秀", "round": 8, "team": "樂天桃猿", "player": "呂承諺", "pick": 45}, {"year": 2024, "type": "季中選秀", "round": 8, "team": "味全龍", "player": "吳承翰", "pick": 46}, {"year": 2024, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "游竣䒴", "pick": 47}, {"year": 2024, "type": "季中選秀", "round": 9, "team": "樂天桃猿", "player": "許賀捷", "pick": 48}, {"year": 2024, "type": "季中選秀", "round": 10, "team": "中信兄弟", "player": "林展樟", "pick": 49}, {"year": 2024, "type": "季中選秀", "round": 11, "team": "中信兄弟", "player": "黃霆杉", "pick": 50}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "韋宏亮", "pick": 1}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "張育豪", "pick": 2}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "黃暐傑", "pick": 3}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "鍾亦恩", "pick": 4}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "曾偉喆", "pick": 5}, {"year": 2025, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "蔡琞傑", "pick": 6}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "朱盟", "pick": 7}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "劉承佑", "pick": 8}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "吳承皓", "pick": 9}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "許賀捷", "pick": 10}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "哀宥宇", "pick": 11}, {"year": 2025, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "徐磊", "pick": 12}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "邱立璿", "pick": 13}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "石梓霖", "pick": 14}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "林紘維", "pick": 15}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "陳世展", "pick": 16}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "王翾祐", "pick": 17}, {"year": 2025, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "焦子杰", "pick": 18}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "林建宏", "pick": 19}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "江庭毅", "pick": 20}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "何宗旂", "pick": 21}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "李育朋", "pick": 22}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "吳紹遠", "pick": 23}, {"year": 2025, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "呂昱廷", "pick": 24}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "台鋼雄鷹", "player": "顏采丞", "pick": 25}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "王偉軒", "pick": 26}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "崔聖允", "pick": 27}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "王奕翔", "pick": 28}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "黃天賜", "pick": 29}, {"year": 2025, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "王興楷", "pick": 30}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "台鋼雄鷹", "player": "張豈豪", "pick": 31}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "王君佑", "pick": 32}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "林軒宇", "pick": 33}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "劉曜維", "pick": 34}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "高偉強", "pick": 35}, {"year": 2025, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "錢可倫", "pick": 36}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "台鋼雄鷹", "player": "許承恩", "pick": 37}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "陽杰恩", "pick": 38}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "傅鈞致", "pick": 39}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "李柏毓", "pick": 40}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "吳柏賢", "pick": 41}, {"year": 2025, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "陳英睿", "pick": 42}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "台鋼雄鷹", "player": "高慶麟", "pick": 43}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "黃騰威", "pick": 44}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "味全龍", "player": "林鴻祥", "pick": 45}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "樂天桃猿", "player": "余新喆", "pick": 46}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "統一7-ELEVEn獅", "player": "陳定均", "pick": 47}, {"year": 2025, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "高秉洋", "pick": 48}, {"year": 2025, "type": "季中選秀", "round": 9, "team": "台鋼雄鷹", "player": "鄭昭誠", "pick": 49}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "富邦悍將", "player": "陳柏凱", "pick": 1}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "味全龍", "player": "廖永詮", "pick": 2}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "台鋼雄鷹", "player": "邱文佑", "pick": 3}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "統一7-ELEVEn獅", "player": "黃靖哲", "pick": 4}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "中信兄弟", "player": "許書誠", "pick": 5}, {"year": 2026, "type": "季中選秀", "round": 1, "team": "樂天桃猿", "player": "陳趙羿勳", "pick": 6}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "富邦悍將", "player": "余冠諭", "pick": 7}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "味全龍", "player": "黃宥儒", "pick": 8}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "台鋼雄鷹", "player": "永田颯太郎", "pick": 9}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "統一7-ELEVEn獅", "player": "李星漢", "pick": 10}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "中信兄弟", "player": "巫宏威", "pick": 11}, {"year": 2026, "type": "季中選秀", "round": 2, "team": "樂天桃猿", "player": "鄭鈞澤", "pick": 12}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "富邦悍將", "player": "陳霆豪", "pick": 13}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "味全龍", "player": "李崧睿", "pick": 14}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "台鋼雄鷹", "player": "宋書桓", "pick": 15}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "統一7-ELEVEn獅", "player": "王靖崴", "pick": 16}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "中信兄弟", "player": "賴承鍇", "pick": 17}, {"year": 2026, "type": "季中選秀", "round": 3, "team": "樂天桃猿", "player": "曾乙倫", "pick": 18}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "富邦悍將", "player": "帕蘇拉·塔基斯利尼安", "pick": 19}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "味全龍", "player": "傅振閎", "pick": 20}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "台鋼雄鷹", "player": "顏承恩", "pick": 21}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "統一7-ELEVEn獅", "player": "曾睿豪", "pick": 22}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "中信兄弟", "player": "黃玠瀚", "pick": 23}, {"year": 2026, "type": "季中選秀", "round": 4, "team": "樂天桃猿", "player": "尤丞翊", "pick": 24}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "富邦悍將", "player": "秦琮恩", "pick": 25}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "味全龍", "player": "許峰穎", "pick": 26}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "台鋼雄鷹", "player": "黃彥博", "pick": 27}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "統一7-ELEVEn獅", "player": "王乃文", "pick": 28}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "中信兄弟", "player": "林鈞瑋", "pick": 29}, {"year": 2026, "type": "季中選秀", "round": 5, "team": "樂天桃猿", "player": "莊偉晟", "pick": 30}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "富邦悍將", "player": "全永樂", "pick": 31}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "味全龍", "player": "李承峻", "pick": 32}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "台鋼雄鷹", "player": "邱承奕", "pick": 33}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "統一7-ELEVEn獅", "player": "黃靖智", "pick": 34}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "中信兄弟", "player": "洪晨勛", "pick": 35}, {"year": 2026, "type": "季中選秀", "round": 6, "team": "樂天桃猿", "player": "吳柏霆", "pick": 36}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "富邦悍將", "player": "李聖韓", "pick": 37}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "味全龍", "player": "黃子睿", "pick": 38}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "台鋼雄鷹", "player": "吳家畯", "pick": 39}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "統一7-ELEVEn獅", "player": "郭靖源", "pick": 40}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "中信兄弟", "player": "石主恩", "pick": 41}, {"year": 2026, "type": "季中選秀", "round": 7, "team": "樂天桃猿", "player": "白井雄登", "pick": 42}, {"year": 2026, "type": "季中選秀", "round": 8, "team": "富邦悍將", "player": "劉建利", "pick": 43}, {"year": 2026, "type": "季中選秀", "round": 8, "team": "味全龍", "player": "施博翔", "pick": 44}, {"year": 2026, "type": "季中選秀", "round": 8, "team": "中信兄弟", "player": "机崇瑋", "pick": 45}, {"year": 2026, "type": "季中選秀", "round": 9, "team": "富邦悍將", "player": "吉路·少瑪", "pick": 46}, {"year": 2026, "type": "季中選秀", "round": 9, "team": "味全龍", "player": "洪嘉恩", "pick": 47}, {"year": 2026, "type": "季中選秀", "round": 9, "team": "中信兄弟", "player": "吳家畯", "pick": 48}, {"year": 2026, "type": "季中選秀", "round": 10, "team": "中信兄弟", "player": "大瀧幸治", "pick": 49}, {"year": 2026, "type": "季中選秀", "round": 11, "team": "中信兄弟", "player": "王羽飛", "pick": 50}];
+
+// Build lookup: combos of team+year that have at least one pick
+const comboMap = {};
+const teamSet = new Set();
+const yearSet = new Set();
+DRAFT_DATA.forEach(d => {
+  const key = d.team + '||' + d.year;
+  if(!comboMap[key]) comboMap[key] = [];
+  comboMap[key].push(d);
+  teamSet.add(d.team);
+  yearSet.add(d.year);
+});
+Object.values(comboMap).forEach(arr => arr.sort((a,b)=> a.pick - b.pick));
+
+const allTeams = Array.from(teamSet).sort();
+const allYears = Array.from(yearSet).sort((a,b)=>a-b);
+let combos = Object.keys(comboMap).map(k=>{
+  const [team, year] = k.split('||');
+  return {team, year:parseInt(year), key:k};
+});
+
+// --- Roster / lineup model ---
+const ROSTER_MAX = 17;
+const FIELD_POSITIONS = ['捕手','一壘手','二壘手','三壘手','游擊手','左外野手','中外野手','右外野手','指定打擊'];
+const POS_ABBR = {'捕手':'捕','一壘手':'一','二壘手':'二','三壘手':'三','游擊手':'遊','左外野手':'左','中外野手':'中','右外野手':'右','指定打擊':'指'};
+
+// Team representative colors
+const TEAM_COLORS = {
+  '兄弟象':'#F5C400', '中信兄弟':'#F5C400',
+  '統一獅':'#F58220', '統一7-ELEVEn獅':'#F58220',
+  '味全龍':'#C8102E',
+  '三商虎':'#005BAC',
+  '俊國熊':'#8DC63F',
+  '興農牛':'#00843D',
+  '時報鷹':'#000000',
+  '和信鯨':'#008C95', '中信鯨':'#008C95',
+  '第一金剛':'#5BC0EB',
+  'La New熊':'#00843D',
+  'Lamigo桃猿':'#00A6CE',
+  '誠泰太陽':'#F58220', '誠泰COBRAS':'#000000',
+  '米迪亞暴龍':'#000000',
+  '義大犀牛':'#6A1B9A',
+  '富邦悍將':'#0066B3',
+  '樂天桃猿':'#8B1E3F',
+  '台鋼雄鷹':'#006B54',
+};
+function teamColor(team){ return TEAM_COLORS[team] || '#5a6478'; }
+
+const SLOT_GROUPS = [
+  { key:'order',  title:'先發打線', count:9 },
+  { key:'bench',  title:'替補野手', count:2 },
+  { key:'sp',     title:'先發投手', count:3 },
+  { key:'mid',    title:'中繼投手', count:2 },
+  { key:'closer', title:'終結者',   count:1 },
+];
+function groupInfo(g){ return SLOT_GROUPS.find(x=>x.key===g); }
+function slotLabel(groupKey, indexZeroBased){
+  if(groupKey==='bench') return '替補野手 '+String.fromCharCode(65+indexZeroBased);
+  if(groupKey==='sp') return '先發'+(indexZeroBased+1);
+  if(groupKey==='mid') return '中繼'+(indexZeroBased+1);
+  if(groupKey==='closer') return '終結者';
+  return groupKey;
+}
+function roundLabel(r){ return r === 0 ? '優先指定' : `第${r}輪`; }
+function slotBadge(groupKey, indexZeroBased){
+  if(groupKey==='bench') return '替';
+  if(groupKey==='sp') return '先';
+  if(groupKey==='mid') return '中';
+  if(groupKey==='closer') return '終';
+  return '';
+}
+
+// State
+let roster = [];
+let history = []; // {team, year, player: string|null}
+let usedCombos = new Set();
+let currentCombo = null;
+let spinning = false;
+let mustAct = false;
+let gameStarted = false;
+let passesUsed = 0;
+let selectedPlayer = null; // {combo, pick}
+
+const yearMinSel = document.getElementById('yearMin');
+const yearMaxSel = document.getElementById('yearMax');
+allYears.forEach(y=>{
+  const o1 = document.createElement('option'); o1.value=y; o1.textContent=y+'年';
+  yearMinSel.appendChild(o1);
+  const o2 = document.createElement('option'); o2.value=y; o2.textContent=y+'年';
+  yearMaxSel.appendChild(o2);
+});
+yearMinSel.value = allYears[0];
+yearMaxSel.value = allYears[allYears.length-1];
+
+const passMaxInput = document.getElementById('passMaxInput');
+function getPassMax(){ return parseInt(passMaxInput.value) || 0; }
+function getPassesLeft(){ return Math.max(0, getPassMax() - passesUsed); }
+
+function getFilteredCombos(){
+  const yMin = parseInt(yearMinSel.value);
+  const yMax = parseInt(yearMaxSel.value);
+  const noRepeat = document.getElementById('noRepeat').checked;
+  return combos.filter(c => c.year >= yMin && c.year <= yMax && (!noRepeat || !usedCombos.has(c.key)));
+}
+
+const spinBtn = document.getElementById('spinBtn');
+const reelTeam = document.getElementById('reelTeam');
+const reelYear = document.getElementById('reelYear');
+const reelTeamValue = document.getElementById('reelTeamValue');
+const reelYearValue = document.getElementById('reelYearValue');
+const statusLine = document.getElementById('statusLine');
+const remainCount = document.getElementById('remainCount');
+const resultCard = document.getElementById('resultCard');
+const resultTitle = document.getElementById('resultTitle');
+const draftPanel = document.getElementById('draftPanel');
+const draftPanelTitle = document.getElementById('draftPanelTitle');
+const candTableBody = document.getElementById('candTableBody');
+const assignBar = document.getElementById('assignBar');
+const pickedName = document.getElementById('pickedName');
+const roleSelect = document.getElementById('roleSelect');
+const orderSelect = document.getElementById('orderSelect');
+const addBtn = document.getElementById('addBtn');
+const passBtn = document.getElementById('passBtn');
+const passLeftLabel = document.getElementById('passLeftLabel');
+const alreadyUsedNote = document.getElementById('alreadyUsedNote');
+
+function randomItem(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function isTeamFull(){ return roster.length >= ROSTER_MAX; }
+function getGroupUsedCount(k){ return roster.filter(r=>r.slotGroup===k).length; }
+function isGroupFull(k){ return getGroupUsedCount(k) >= groupInfo(k).count; }
+function getUsedOrders(){ return new Set(roster.filter(r=>r.slotGroup==='order').map(r=>r.orderNum)); }
+function getUsedPositions(){ return new Set(roster.filter(r=>r.slotGroup==='order').map(r=>r.position)); }
+
+function updateRemainCount(){ remainCount.textContent = getFilteredCombos().length; }
+
+function updateFilterLock(){
+  const locked = gameStarted; // once the game has started, these are locked until reset
+  yearMinSel.disabled = locked;
+  yearMaxSel.disabled = locked;
+  document.getElementById('noRepeat').disabled = locked;
+  passMaxInput.disabled = locked;
+}
+
+function updateSpinButton(){
+  spinBtn.disabled = spinning || mustAct || isTeamFull();
+  spinBtn.textContent = isTeamFull() ? '球隊已滿 17 人' : '轉動輪盤';
+  updateRemainCount();
+}
+
+function spin(){
+  if(spinning || mustAct || isTeamFull()) return;
+  const pool = getFilteredCombos();
+  if(pool.length === 0){
+    statusLine.innerHTML = '目前篩選條件下，已經沒有可以轉出的「球團×年度」組合了。可以調整年度範圍，或關閉「不重複」。';
+    return;
+  }
+  if(!gameStarted){
+    gameStarted = true;
+    updateFilterLock();
+  }
+  spinning = true;
+  updateSpinButton();
+  reelTeam.classList.add('spinning');
+  reelYear.classList.add('spinning');
+  resultCard.style.display = 'none';
+  draftPanel.style.display = 'none';
+  statusLine.textContent = '';
+
+  const finalCombo = randomItem(pool);
+  const steps = 26;
+  let i = 0;
+  function tick(){
+    i++;
+    reelTeamValue.textContent = randomItem(allTeams);
+    reelYearValue.textContent = randomItem(allYears);
+    if(i < steps){
+      setTimeout(tick, 40 + Math.pow(i/steps, 2.2) * 160);
+    } else {
+      reelTeamValue.textContent = finalCombo.team;
+      reelYearValue.textContent = finalCombo.year;
+      reelTeam.classList.remove('spinning');
+      reelYear.classList.remove('spinning');
+      spinning = false;
+      currentCombo = finalCombo;
+      mustAct = true;
+      updateFilterLock();
+      updateSpinButton();
+      showResult(finalCombo);
+    }
+  }
+  tick();
+}
+
+function showResult(combo){
+  resultCard.style.display = 'block';
+  resultTitle.textContent = `${combo.year}年 ${combo.team}`;
+  draftPanel.style.display = 'block';
+  draftPanelTitle.textContent = `${combo.year}年 選秀名冊`;
+  selectedPlayer = null;
+
+  const draftType = comboMap[combo.key][0].type;
+  const queryText = `${combo.year}年 中華職棒 ${draftType} ${combo.team}`;
+  const wikiPageTitle = combo.year >= 2003
+    ? `${combo.year}年中華職棒大聯盟選秀會`
+    : `${combo.year}年中華職棒選秀會`;
+  document.getElementById('wikiLink').href = `https://twbsball.dils.tku.edu.tw/index.php?title=${encodeURIComponent(wikiPageTitle)}`;
+  document.getElementById('googleLink').href = `https://www.google.com/search?q=${encodeURIComponent(queryText)}`;
+
+  renderCandTable(combo);
+  renderAssignBar();
+  statusLine.innerHTML = `從下方名冊點選一位球員，並在下面指定位置後按「加入球隊」；也可以直接使用 PASS 跳過（剩餘 ${getPassesLeft()} 次）。`;
+}
+
+function renderCandTable(combo){
+  const list = comboMap[combo.key];
+  candTableBody.innerHTML = '';
+  list.forEach(p=>{
+    const alreadyIn = roster.some(r => r.team===combo.team && r.year===combo.year && r.player===p.player);
+    const tr = document.createElement('tr');
+    tr.className = alreadyIn ? 'used' : '';
+    if(selectedPlayer && selectedPlayer.pick === p) tr.classList.add('selected');
+    tr.innerHTML = `
+      <td class="pick-num">#${p.pick}</td>
+      <td>${p.player}</td>
+      <td style="color:var(--cream-dim);font-size:12px;">${p.type}・${roundLabel(p.round)}</td>
+      <td><button class="pick-btn" ${alreadyIn?'disabled':''}>${alreadyIn?'已加入過':'選擇'}</button></td>
+    `;
+    tr.querySelector('button').addEventListener('click', ()=>{
+      if(alreadyIn) return;
+      selectedPlayer = {combo, pick: p};
+      renderCandTable(combo);
+      renderAssignBar();
+    });
+    candTableBody.appendChild(tr);
+  });
+}
+
+function renderAssignBar(){
+  passLeftLabel.textContent = getPassesLeft();
+  passBtn.disabled = getPassesLeft() <= 0;
+
+  if(!selectedPlayer){
+    pickedName.textContent = '— 請先在上方名冊點選一位 —';
+    roleSelect.innerHTML = '<option value="">請先選擇球員</option>';
+    roleSelect.disabled = true;
+    orderSelect.innerHTML = '<option value="">—</option>';
+    orderSelect.disabled = true;
+    addBtn.disabled = true;
+    return;
+  }
+
+  pickedName.textContent = `${selectedPlayer.pick.player}（#${selectedPlayer.pick.pick}・${roundLabel(selectedPlayer.pick.round)}）`;
+  roleSelect.disabled = false;
+
+  const usedPositions = getUsedPositions();
+  let optsHtml = '<option value="">選擇角色</option>';
+  optsHtml += '<optgroup label="先發打線（守備位置）">';
+  FIELD_POSITIONS.forEach(p=>{
+    optsHtml += `<option value="order:${p}" ${usedPositions.has(p)?'disabled':''}>${p}${usedPositions.has(p)?'（已使用）':''}</option>`;
+  });
+  optsHtml += '</optgroup><optgroup label="投手 / 替補">';
+  ['bench','sp','mid','closer'].forEach(k=>{
+    const g = groupInfo(k);
+    const full = isGroupFull(k);
+    optsHtml += `<option value="${k}" ${full?'disabled':''}>${g.title}（${getGroupUsedCount(k)}/${g.count}）${full?' 已滿':''}</option>`;
+  });
+  optsHtml += '</optgroup>';
+  const prevRole = roleSelect.value;
+  roleSelect.innerHTML = optsHtml;
+  if(prevRole) roleSelect.value = prevRole;
+
+  updateOrderSelectVisibility();
+  updateAddButtonState();
+}
+
+function updateOrderSelectVisibility(){
+  const val = roleSelect.value;
+  if(val.startsWith('order:')){
+    const usedOrders = getUsedOrders();
+    orderSelect.disabled = false;
+    orderSelect.innerHTML = '<option value="">選擇棒次</option>' +
+      Array.from({length:9},(_,i)=>i+1).filter(n=>!usedOrders.has(n))
+        .map(n=>`<option value="${n}">${n}棒</option>`).join('');
+  } else {
+    orderSelect.disabled = true;
+    orderSelect.innerHTML = '<option value="">不需要棒次</option>';
+  }
+}
+
+function updateAddButtonState(){
+  const val = roleSelect.value;
+  if(!val){ addBtn.disabled = true; return; }
+  if(val.startsWith('order:')){
+    addBtn.disabled = !orderSelect.value;
+  } else {
+    addBtn.disabled = false;
+  }
+}
+
+roleSelect.addEventListener('change', ()=>{ updateOrderSelectVisibility(); updateAddButtonState(); });
+orderSelect.addEventListener('change', updateAddButtonState);
+
+addBtn.addEventListener('click', ()=>{
+  if(!selectedPlayer || addBtn.disabled) return;
+  const {combo, pick} = selectedPlayer;
+  const val = roleSelect.value;
+  let entry;
+  if(val.startsWith('order:')){
+    const position = val.split(':')[1];
+    const orderNum = parseInt(orderSelect.value);
+    entry = { team:combo.team, year:combo.year, player:pick.player, round:pick.round, pick:pick.pick,
+      slotGroup:'order', slotIndex:0, orderNum, position };
+  } else {
+    const groupKey = val;
+    const slotIndex = getGroupUsedCount(groupKey);
+    entry = { team:combo.team, year:combo.year, player:pick.player, round:pick.round, pick:pick.pick,
+      slotGroup:groupKey, slotIndex, orderNum:null, position:null };
+  }
+  roster.push(entry);
+  usedCombos.add(combo.key);
+  history.unshift({team:combo.team, year:combo.year, player:pick.player});
+
+  mustAct = false;
+  selectedPlayer = null;
+  currentCombo = null;
+  updateFilterLock();
+  updateSpinButton();
+  renderRoster();
+  renderHistory();
+
+  resultCard.style.display = 'none';
+  draftPanel.style.display = 'none';
+
+  const roleText = val.startsWith('order:') ? `${entry.orderNum}棒／${entry.position}` : groupInfo(val).title;
+  statusLine.innerHTML = isTeamFull()
+    ? `<b>${pick.player}</b> 加入後，隊伍剛好滿 17 人，打線卡已經完成！`
+    : `<b>${pick.player}</b>（${combo.team} ${combo.year}年 · ${roleText}）已加入球隊！請再轉一次輪盤。`;
+});
+
+passBtn.addEventListener('click', ()=>{
+  if(!mustAct || getPassesLeft() <= 0 || !currentCombo) return;
+  passesUsed++;
+  usedCombos.add(currentCombo.key);
+  history.unshift({team:currentCombo.team, year:currentCombo.year, player:null});
+  mustAct = false;
+  currentCombo = null;
+  selectedPlayer = null;
+  updateFilterLock();
+  updateSpinButton();
+  renderHistory();
+  resultCard.style.display = 'none';
+  draftPanel.style.display = 'none';
+  statusLine.innerHTML = `已使用 1 次 PASS（剩餘 ${getPassesLeft()} 次）。請再次轉動輪盤。`;
+});
+
+function renderRoster(){
+  document.getElementById('rosterCount').textContent = roster.length;
+  document.getElementById('progressFill').style.width = (roster.length / ROSTER_MAX * 100) + '%';
+
+  const container = document.getElementById('lineupCompact');
+  container.innerHTML = '';
+
+  SLOT_GROUPS.forEach(g=>{
+    const titleEl = document.createElement('div');
+    titleEl.className = 'lc-section-title';
+    titleEl.textContent = g.title;
+    container.appendChild(titleEl);
+
+    for(let i=0;i<g.count;i++){
+      let entry, badge, num;
+      if(g.key === 'order'){
+        const orderNum = i+1;
+        entry = roster.find(r=>r.slotGroup==='order' && r.orderNum===orderNum);
+        badge = entry ? POS_ABBR[entry.position] : '－';
+        num = orderNum;
+      } else {
+        entry = roster.find(r=>r.slotGroup===g.key && r.slotIndex===i);
+        badge = slotBadge(g.key, i);
+        num = null;
+      }
+      const row = document.createElement('div');
+      row.className = 'lc-row' + (entry ? ' filled' : '');
+      const idx = entry ? roster.indexOf(entry) : -1;
+      row.innerHTML = `
+        ${num ? `<div class="lc-num">${num}</div>` : `<div class="lc-num" style="font-size:12px;">${slotLabel(g.key,i).replace(/[0-9]/g,'')}</div>`}
+        <div class="lc-badge">${badge}</div>
+        <div class="lc-name ${entry?'':'placeholder'}">${entry ? entry.player : '未定 — 從輪盤選人後會自動填入'}</div>
+        ${entry ? `<div class="lc-origin" style="background:${teamColor(entry.team)};">'${String(entry.year).slice(-2)} ${entry.team}</div>` : ''}
+      `;
+      container.appendChild(row);
+    }
+  });
+}
+
+function renderHistory(){
+  const el = document.getElementById('historyList');
+  if(history.length === 0){
+    el.innerHTML = '<div class="empty-hint">還沒有任何紀錄。</div>';
+    return;
+  }
+  el.innerHTML = '';
+  history.forEach(h=>{
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    const isPass = h.player === null;
+    item.innerHTML = `
+      <div class="history-dot ${isPass?'pass':''}"></div>
+      <div class="history-team">${h.year} ${h.team}</div>
+      <div class="history-result ${isPass?'pass':''}">${isPass ? 'PASS（跳過）' : h.player}</div>
+    `;
+    el.appendChild(item);
+  });
+}
+
+document.getElementById('resetTeamBtn').addEventListener('click', ()=>{
+  const btn = document.getElementById('resetTeamBtn');
+  if(roster.length === 0){
+    resetAll();
+    return;
+  }
+  if(btn.dataset.confirming === '1'){
+    clearTimeout(window.__resetConfirmTimer);
+    btn.dataset.confirming = '';
+    btn.textContent = '重置全部（重新開始）';
+    btn.classList.remove('btn-danger-armed');
+    resetAll();
+    return;
+  }
+  btn.dataset.confirming = '1';
+  btn.textContent = '再按一次確認重置';
+  btn.classList.add('btn-danger-armed');
+  window.__resetConfirmTimer = setTimeout(()=>{
+    btn.dataset.confirming = '';
+    btn.textContent = '重置全部（重新開始）';
+    btn.classList.remove('btn-danger-armed');
+  }, 4000);
+});
+function resetAll(){
+  roster = [];
+  history = [];
+  usedCombos.clear();
+  currentCombo = null;
+  mustAct = false;
+  gameStarted = false;
+  passesUsed = 0;
+  selectedPlayer = null;
+  updateFilterLock();
+  updateSpinButton();
+  renderRoster();
+  renderHistory();
+  resultCard.style.display = 'none';
+  draftPanel.style.display = 'none';
+  reelTeamValue.textContent = '？？？';
+  reelYearValue.textContent = '20??';
+  statusLine.textContent = '還沒轉過輪盤，按下「轉動輪盤」開始吧。';
+}
+
+document.getElementById('exportImageBtn').addEventListener('click', generateShareImage);
+document.getElementById('closeImageModal').addEventListener('click', ()=>{
+  document.getElementById('imageModal').style.display = 'none';
+});
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.arcTo(x+w, y, x+w, y+h, r);
+  ctx.arcTo(x+w, y+h, x, y+h, r);
+  ctx.arcTo(x, y+h, x, y, r);
+  ctx.arcTo(x, y, x+w, y, r);
+  ctx.closePath();
+}
+
+function generateShareImage(){
+  if(roster.length === 0){
+    alert('隊伍還是空的，先去轉輪盤選幾位球員吧！');
+    return;
+  }
+
+  const W = 1080;
+  const PAD = 56;
+  const ROW_H = 78;
+  const SECTION_TITLE_H = 58;
+  const SECTION_GAP = 30;
+  const HEADER_H = 250;
+  const FOOTER_H = 70;
+
+  const H = PAD + HEADER_H
+    + SECTION_TITLE_H + 9*ROW_H + SECTION_GAP
+    + SECTION_TITLE_H + 2*ROW_H + SECTION_GAP
+    + SECTION_TITLE_H + 6*ROW_H + SECTION_GAP
+    + FOOTER_H + PAD;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  const bgGrad = ctx.createLinearGradient(0,0,0,H);
+  bgGrad.addColorStop(0, '#16243A');
+  bgGrad.addColorStop(1, '#0A1220');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0,0,W,H);
+
+  // Outer gold border
+  ctx.strokeStyle = '#F2B705';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(14, 14, W-28, H-28);
+  ctx.strokeStyle = 'rgba(242,183,5,0.4)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(22, 22, W-44, H-44);
+
+  let y = PAD + 10;
+
+  // Eyebrow
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#F2B705';
+  ctx.font = '700 26px sans-serif';
+  ctx.fillText('Draft Draft CPBL', W/2, y);
+  y += 56;
+
+  // Team name
+  const teamName = (document.getElementById('teamNameInput').value || '我的夢幻球隊').trim();
+  ctx.fillStyle = '#EDE6D6';
+  ctx.font = '700 56px sans-serif';
+  ctx.fillText(teamName, W/2, y);
+  y += 46;
+
+  // Subtitle
+  ctx.fillStyle = '#B9BFCC';
+  ctx.font = '400 24px sans-serif';
+  ctx.fillText(`編成 ${roster.length}/${ROSTER_MAX}`, W/2, y);
+  y += 60;
+
+  ctx.textAlign = 'left';
+
+  function drawSectionTitle(text){
+    ctx.fillStyle = '#F2B705';
+    ctx.font = '700 32px sans-serif';
+    ctx.fillText(text, PAD, y + 32);
+    y += SECTION_TITLE_H;
+  }
+
+  function drawRow(numText, badgeText, playerText, originTeam, originYear, originRound){
+    const rowY = y;
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    ctx.fillRect(PAD - 10, rowY, W - (PAD-10)*2, ROW_H - 10);
+
+    // number / round label
+    ctx.fillStyle = '#F2B705';
+    ctx.font = '700 30px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(numText, PAD + 100, rowY + 46);
+    ctx.textAlign = 'left';
+
+    // position badge
+    const badgeX = PAD + 130;
+    const badgeSize = 48;
+    ctx.strokeStyle = '#F2B705';
+    ctx.lineWidth = 2;
+    roundRect(ctx, badgeX, rowY + 10, badgeSize, badgeSize, 8);
+    ctx.stroke();
+    ctx.fillStyle = '#EDE6D6';
+    ctx.font = '700 26px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(badgeText, badgeX + badgeSize/2, rowY + 42);
+    ctx.textAlign = 'left';
+
+    // player name
+    ctx.fillStyle = playerText.startsWith('—') ? '#7A8194' : '#FFFFFF';
+    ctx.font = '700 34px sans-serif';
+    ctx.fillText(playerText, badgeX + badgeSize + 24, rowY + 46);
+
+    // origin badge (right aligned, colored by team)
+    if(originTeam){
+      const label = `'${String(originYear).slice(-2)} ${originTeam}・${roundLabel(originRound)}`;
+      ctx.font = '700 22px sans-serif';
+      const textW = ctx.measureText(label).width;
+      const badgeW = textW + 28;
+      const badgeH = 42;
+      const bx = W - PAD - badgeW;
+      const by = rowY + (ROW_H-10)/2 - badgeH/2;
+      ctx.fillStyle = teamColor(originTeam);
+      roundRect(ctx, bx, by, badgeW, badgeH, 8);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+      ctx.lineWidth = 1;
+      roundRect(ctx, bx, by, badgeW, badgeH, 8);
+      ctx.stroke();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.textAlign = 'center';
+      ctx.fillText(label, bx + badgeW/2, by + badgeH/2 + 8);
+      ctx.textAlign = 'left';
+    }
+
+    y += ROW_H;
+  }
+
+  // Section: 先發打線
+  drawSectionTitle('先發打線');
+  for(let i=0;i<9;i++){
+    const orderNum = i+1;
+    const entry = roster.find(r=>r.slotGroup==='order' && r.orderNum===orderNum);
+    if(entry){
+      drawRow(String(orderNum), POS_ABBR[entry.position]||'', entry.player, entry.team, entry.year, entry.round);
+    } else {
+      drawRow(String(orderNum), '－', '— 未定 —', null);
+    }
+  }
+  y += SECTION_GAP;
+
+  // Section: 替補野手
+  drawSectionTitle('替補野手');
+  for(let i=0;i<2;i++){
+    const entry = roster.find(r=>r.slotGroup==='bench' && r.slotIndex===i);
+    const label = slotLabel('bench', i).replace('替補野手 ','');
+    if(entry){
+      drawRow(label, '替', entry.player, entry.team, entry.year, entry.round);
+    } else {
+      drawRow(label, '－', '— 未定 —', null);
+    }
+  }
+  y += SECTION_GAP;
+
+  // Section: 投手陣
+  drawSectionTitle('投手陣');
+  const pitcherRows = [
+    ...[0,1,2].map(i=>({key:'sp', i, label:'先發'+(i+1), badge:'投'})),
+    ...[0,1].map(i=>({key:'mid', i, label:'中繼'+(i+1), badge:'投'})),
+    {key:'closer', i:0, label:'終結者', badge:'投'},
+  ];
+  pitcherRows.forEach(r=>{
+    const entry = roster.find(x=>x.slotGroup===r.key && x.slotIndex===r.i);
+    if(entry){
+      drawRow(r.label, r.badge, entry.player, entry.team, entry.year, entry.round);
+    } else {
+      drawRow(r.label, r.badge, '— 未定 —', null);
+    }
+  });
+  y += SECTION_GAP;
+
+  // Footer
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#7A8194';
+  ctx.font = '400 20px sans-serif';
+  ctx.fillText('Draft Draft CPBL（致敬ドラフト×ドラフト メーカー）', W/2, y + 30);
+
+  // Show in modal
+  const dataUrl = canvas.toDataURL('image/png');
+  document.getElementById('shareImagePreview').src = dataUrl;
+  document.getElementById('downloadImageLink').href = dataUrl;
+  document.getElementById('imageModal').style.display = 'flex';
+}
+
+spinBtn.addEventListener('click', spin);
+
+yearMinSel.addEventListener('change', ()=>{
+  if(parseInt(yearMinSel.value) > parseInt(yearMaxSel.value)) yearMaxSel.value = yearMinSel.value;
+  updateRemainCount();
+});
+yearMaxSel.addEventListener('change', ()=>{
+  if(parseInt(yearMaxSel.value) < parseInt(yearMinSel.value)) yearMinSel.value = yearMaxSel.value;
+  updateRemainCount();
+});
+document.getElementById('noRepeat').addEventListener('change', updateRemainCount);
+passMaxInput.addEventListener('input', ()=>{ if(mustAct) renderAssignBar(); });
+
+updateSpinButton();
+renderRoster();
+renderHistory();
+</script>
+</body>
+</html>

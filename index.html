@@ -389,6 +389,14 @@
   .cand-table tbody tr:hover{background:rgba(242,183,5,0.06);}
   .cand-table tbody tr.selected{background:rgba(242,183,5,0.14);}
   .cand-table tbody tr.used{opacity:0.4;cursor:not-allowed;}
+  .cand-table tbody tr.banned-row{background:rgba(217,97,79,0.06);}
+  .cand-table tbody tr.banned-row:hover{background:rgba(217,97,79,0.06);}
+  .banned-name{
+    cursor:pointer;color:var(--danger);text-decoration:line-through;text-decoration-color:rgba(217,97,79,0.6);
+  }
+  .banned-tag{
+    font-size:10.5px;color:var(--danger);font-weight:700;margin-top:2px;line-height:1.3;
+  }
   .cand-table .pick-num{font-family:'Teko',sans-serif;color:var(--amber);font-size:16px;}
   .cand-table .used-tag{font-size:11px;color:var(--grass-bright);}
   .cand-table .pick-btn{
@@ -726,6 +734,26 @@ const TEAM_COLORS = {
 };
 function teamColor(team){ return TEAM_COLORS[team] || '#5a6478'; }
 
+// Players permanently banned from CPBL for game-fixing/betting scandals (涉簽賭案終身禁賽)
+// Source: user-provided screenshot of Chinese Wikipedia category listing (91 names).
+const BANNED_PLAYERS = new Set([
+  "中込伸","劉世璿","劉俊男","力歐","卓琨原","古國謙","吳俊賢","吳保賢","吳偲佑","吳晉維",
+  "呂文生","安立奎","廖于誠","廖敏雄","張正憲","張誌家","戰玉飛","戴龍水","拿破崙","曹錦輝",
+  "曾政雄","曾治翰","曾漢州","曾貴章","朱鴻森","李濠任","李義偉","李聰富","杜章偉","林津平",
+  "林逸松","柳裕展","楊博任","楊宗範","楊章鑫","江泰權","汪竣泰","潘忠孝","王光熙","王志華",
+  "王燿嘉","田顯明","紀俊麟","胡仁偉","莊侑霖","莊瑋全","蔡宗佑","蔡生豐","蔡英峰","蔡豐安",
+  "蔣智聰","褚志遠","許人介","許志昌","許文雄","謝佳賢","謝奇勳","貝力","買嘉瑞","賴俊男",
+  "邱啟成","郭一峰","郭尚豪","郭建成","鄭余亮","鄭昌明","鄭百勝","鍾陳慶國","陳健偉","陳元甲",
+  "陳克帆","陳嘉宏","陳執信","陳建輔","陳懷山","陳昭穎","陳永哲","陳耿佑","陳致遠","雷霸龍",
+  "顏志中","高俊強","黃俊傑","黃宏任","黃小偉","黃政琦","黃榮義","黃正偉","黃裕登","黃貴裕","黃鈤裕",
+]);
+function isBanned(name){ return BANNED_PLAYERS.has(name); }
+
+function triggerBannedEasterEgg(){
+  resetAll();
+  window.open('https://zh.wikipedia.org/wiki/中華職棒簽賭案', '_blank', 'noopener');
+}
+
 const SLOT_GROUPS = [
   { key:'order',  title:'先發打線', count:9 },
   { key:'bench',  title:'替補野手', count:2 },
@@ -895,22 +923,33 @@ function renderCandTable(combo){
   const list = comboMap[combo.key];
   candTableBody.innerHTML = '';
   list.forEach(p=>{
+    const banned = isBanned(p.player);
     const alreadyIn = roster.some(r => r.team===combo.team && r.year===combo.year && r.player===p.player);
     const tr = document.createElement('tr');
     tr.className = alreadyIn ? 'used' : '';
+    if(banned) tr.classList.add('banned-row');
     if(selectedPlayer && selectedPlayer.pick === p) tr.classList.add('selected');
+
+    const nameCell = banned
+      ? `<span class="banned-name" title="…">${p.player}</span><div class="banned-tag">💩涉簽賭案遭終身禁賽者💩</div>`
+      : p.player;
+
     tr.innerHTML = `
       <td class="pick-num">#${p.pick}</td>
-      <td>${p.player}</td>
+      <td>${nameCell}</td>
       <td style="color:var(--cream-dim);font-size:12px;">${p.type}・${roundLabel(p.round)}</td>
-      <td><button class="pick-btn" ${alreadyIn?'disabled':''}>${alreadyIn?'已加入過':'選擇'}</button></td>
+      <td><button class="pick-btn" ${(alreadyIn||banned)?'disabled':''}>${banned ? '🚫 禁選' : (alreadyIn?'已加入過':'選擇')}</button></td>
     `;
     tr.querySelector('button').addEventListener('click', ()=>{
-      if(alreadyIn) return;
+      if(alreadyIn || banned) return;
       selectedPlayer = {combo, pick: p};
       renderCandTable(combo);
       renderAssignBar();
     });
+    if(banned){
+      const nameEl = tr.querySelector('.banned-name');
+      if(nameEl) nameEl.addEventListener('click', triggerBannedEasterEgg);
+    }
     candTableBody.appendChild(tr);
   });
 }

@@ -368,6 +368,12 @@
     border-color:var(--danger) !important;color:var(--danger) !important;
     background:rgba(217,97,79,0.1) !important;
   }
+  .training-banner{
+    display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+    background:linear-gradient(90deg, rgba(242,183,5,0.15), rgba(242,183,5,0.05));
+    border:1px solid var(--amber-dim);border-radius:12px;
+    padding:14px 18px;margin-top:20px;font-size:13.5px;color:var(--amber);font-weight:700;
+  }
   .filters input[type=number]{
     width:60px;background:var(--navy-deep);color:var(--cream);border:1px solid var(--line);
     border-radius:6px;padding:4px 8px;font-family:inherit;
@@ -672,6 +678,52 @@
     <div class="already-used-note" id="alreadyUsedNote" style="display:none;"></div>
   </div>
 
+  <div class="training-banner" id="trainingBanner" style="display:none;">
+    <span id="trainingBannerText">🎓 自主培訓機會已解鎖！</span>
+    <button class="btn-spin" id="openTrainingBtn" style="padding:8px 18px;font-size:13px;">查看名單</button>
+  </div>
+
+  <div class="panel" id="selfTrainingPanel" style="display:none;">
+    <div class="panel-title"><span class="dot"></span><span id="selfTrainingPanelTitle">自主培訓選手</span></div>
+    <p class="subtitle" style="margin:0 0 16px;text-align:left;">本局轉盤三次都轉到同一年度，解鎖該年度自主培訓選手名單，可以額外挑一位加入球隊（跟一般選秀球員共用17個名額）。</p>
+
+    <div class="cand-table-wrap">
+      <table class="cand-table">
+        <thead>
+          <tr><th>球團</th><th>選手名</th><th></th></tr>
+        </thead>
+        <tbody id="trainingTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="assign-bar" id="stAssignBar">
+      <div class="assign-row">
+        <div class="assign-field">
+          <label>選手名</label>
+          <div class="assign-static" id="stPickedName">— 請先在上方名冊點選一位 —</div>
+        </div>
+      </div>
+      <div class="assign-row two-col">
+        <div class="assign-field">
+          <label>守備 / 角色</label>
+          <select id="stRoleSelect">
+            <option value="">選擇角色</option>
+          </select>
+        </div>
+        <div class="assign-field">
+          <label>棒次</label>
+          <select id="stOrderSelect" disabled>
+            <option value="">—</option>
+          </select>
+        </div>
+      </div>
+      <div class="assign-row buttons-row">
+        <button class="btn-spin" id="stAddBtn" disabled>加入球隊</button>
+        <button class="btn-ghost" id="stCloseBtn">先不選，關閉</button>
+      </div>
+    </div>
+  </div>
+
   <div class="panel">
     <div class="roster-head">
       <div class="panel-title" style="margin-bottom:0;"><span class="dot"></span>我的夢幻球隊</div>
@@ -795,14 +847,26 @@ const BANNED_PLAYERS = new Set([
   "邱啟成","郭一峰","郭尚豪","郭建成","鄭余亮","鄭昌明","鄭百勝","鍾陳慶國","陳健偉","陳元甲",
   "陳克帆","陳嘉宏","陳執信","陳建輔","陳懷山","陳昭穎","陳永哲","陳耿佑","陳致遠","雷霸龍",
   "顏志中","高俊強","黃俊傑","黃宏任","黃小偉","黃政琦","黃榮義","黃正偉","黃裕登","黃貴裕","黃鈤裕",
-  "莊宏亮",
+  "莊宏亮","黃俊中",
 ]);
 function isBanned(name){ return BANNED_PLAYERS.has(name); }
 
 // Duplicate-draft players: same person selected in more than one draft.
 // mode 'reject' = player declined to join / team dissolved -> only the LATEST entry is selectable.
 // mode 'special' = both entries are legitimate (2008 special draft after the match-fixing scandal) -> pick either once, the other locks.
-const DUPLICATE_GROUPS = [{"player": "曾兆豪", "mode": "special", "entries": [{"year": 2003, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "La New熊", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "周思齊", "mode": "special", "entries": [{"year": 2003, "team": "誠泰太陽", "round": 3, "type": "代訓選手選秀"}, {"year": 2008, "team": "兄弟象", "round": 3, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "朱尉銘", "mode": "special", "entries": [{"year": 2003, "team": "中信鯨", "round": 7, "type": "代訓選手選秀"}, {"year": 2008, "team": "統一獅", "round": 1, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "統一獅", "reason": "scandal"}, {"player": "林建宏", "mode": "reject", "entries": [{"year": 2022, "team": "台鋼雄鷹", "round": 22, "type": "季中選秀"}, {"year": 2025, "team": "台鋼雄鷹", "round": 4, "type": "季中選秀"}], "latestYear": 2025, "latestTeam": "台鋼雄鷹"}, {"player": "陳江和", "mode": "special", "entries": [{"year": 2004, "team": "中信鯨", "round": 2, "type": "代訓選手選秀(三)"}, {"year": 2006, "team": "兄弟象", "round": 1, "type": "新人選秀"}], "latestYear": 2006, "latestTeam": "兄弟象", "reason": "training"}, {"player": "黃浩然", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 2, "type": "代訓選手選秀(二)"}, {"year": 2008, "team": "La New熊", "round": 5, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "鄧蒔陽", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 1, "type": "季前新人選秀"}, {"year": 2008, "team": "興農牛", "round": 5, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "潘武雄", "mode": "reject", "entries": [{"year": 2004, "team": "興農牛", "round": 1, "type": "季前新人選秀"}, {"year": 2005, "team": "統一獅", "round": 2, "type": "新人選秀"}], "latestYear": 2005, "latestTeam": "統一獅"}, {"player": "沈鈺傑", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 2, "type": "季前新人選秀"}, {"year": 2004, "team": "中信鯨", "round": 1, "type": "季後新人選秀"}, {"year": 2008, "team": "興農牛", "round": 3, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "倪福德", "mode": "reject", "entries": [{"year": 2005, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "兄弟象", "round": 1, "type": "特別選秀"}, {"year": 2015, "team": "義大犀牛", "round": 2, "type": "季中選秀"}], "latestYear": 2015, "latestTeam": "義大犀牛"}, {"player": "陳致鵬", "mode": "special", "entries": [{"year": 2005, "team": "誠泰COBRAS", "round": 2, "type": "新人選秀"}, {"year": 2008, "team": "兄弟象", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "陳彥銘", "mode": "reject", "entries": [{"year": 2005, "team": "La New熊", "round": 14, "type": "新人選秀"}, {"year": 2006, "team": "興農牛", "round": 1, "type": "新人選秀"}], "latestYear": 2006, "latestTeam": "興農牛"}, {"player": "李義偉", "mode": "special", "entries": [{"year": 2006, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "興農牛", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "黃宏任", "mode": "special", "entries": [{"year": 2006, "team": "中信鯨", "round": 3, "type": "代訓選手選秀"}, {"year": 2008, "team": "La New熊", "round": 2, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "紀榮家", "mode": "special", "entries": [{"year": 2006, "team": "La New熊", "round": 5, "type": "代訓選手選秀"}, {"year": 2011, "team": "興農牛", "round": 5, "type": "一般選秀"}], "latestYear": 2011, "latestTeam": "興農牛", "reason": "training"}, {"player": "詹智堯", "mode": "special", "entries": [{"year": 2007, "team": "誠泰COBRAS", "round": 1, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 1, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "唐嘉駿", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 1, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 6, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "王泯皓", "mode": "special", "entries": [{"year": 2007, "team": "誠泰COBRAS", "round": 2, "type": "一般選秀"}, {"year": 2008, "team": "興農牛", "round": 6, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "林瀚", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 2, "type": "一般選秀"}, {"year": 2008, "team": "統一獅", "round": 2, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "統一獅", "reason": "scandal"}, {"player": "張志豪", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 4, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 3, "type": "特別選秀"}, {"year": 2009, "team": "兄弟象", "round": 2, "type": "一般選秀"}], "latestYear": 2009, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "黃伯楷", "mode": "reject", "entries": [{"year": 2009, "team": "興農牛", "round": 11, "type": "一般選秀"}, {"year": 2011, "team": "興農牛", "round": 6, "type": "一般選秀"}], "latestYear": 2011, "latestTeam": "興農牛"}, {"player": "王英山", "mode": "reject", "entries": [{"year": 2010, "team": "統一獅", "round": 3, "type": "一般選秀"}, {"year": 2012, "team": "兄弟象", "round": 3, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "兄弟象"}, {"player": "黃梓育", "mode": "reject", "entries": [{"year": 2010, "team": "La New熊", "round": 8, "type": "一般選秀"}, {"year": 2012, "team": "兄弟象", "round": 6, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "兄弟象"}, {"player": "吳培輝", "mode": "reject", "entries": [{"year": 2011, "team": "興農牛", "round": 4, "type": "一般選秀"}, {"year": 2012, "team": "Lamigo桃猿", "round": 8, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "Lamigo桃猿"}, {"player": "方玄宗", "mode": "reject", "entries": [{"year": 2012, "team": "兄弟象", "round": 5, "type": "一般選秀"}, {"year": 2013, "team": "義大犀牛", "round": 6, "type": "一般選秀"}], "latestYear": 2013, "latestTeam": "義大犀牛"}, {"player": "黃思漢", "mode": "reject", "entries": [{"year": 2013, "team": "兄弟象", "round": 7, "type": "一般選秀"}, {"year": 2014, "team": "義大犀牛", "round": 5, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "義大犀牛"}, {"player": "林樺慶", "mode": "reject", "entries": [{"year": 2013, "team": "義大犀牛", "round": 2, "type": "高中生選秀"}, {"year": 2014, "team": "Lamigo桃猿", "round": 2, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "Lamigo桃猿"}, {"player": "王朝民", "mode": "reject", "entries": [{"year": 2013, "team": "Lamigo桃猿", "round": 3, "type": "高中生選秀"}, {"year": 2014, "team": "統一7-ELEVEn獅", "round": 6, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "統一7-ELEVEn獅"}, {"player": "劉軒荅", "mode": "reject", "entries": [{"year": 2015, "team": "中信兄弟", "round": 11, "type": "季中選秀"}, {"year": 2018, "team": "統一7-ELEVEn獅", "round": 3, "type": "季中選秀"}], "latestYear": 2018, "latestTeam": "統一7-ELEVEn獅"}, {"player": "森榮鴻", "mode": "reject", "entries": [{"year": 2016, "team": "Lamigo桃猿", "round": 4, "type": "季中選秀"}, {"year": 2019, "team": "味全龍", "round": 6, "type": "季中選秀"}], "latestYear": 2019, "latestTeam": "味全龍"}, {"player": "吳蔚驊", "mode": "reject", "entries": [{"year": 2016, "team": "義大犀牛", "round": 6, "type": "季中選秀"}, {"year": 2017, "team": "中信兄弟", "round": 10, "type": "季中選秀"}], "latestYear": 2017, "latestTeam": "中信兄弟"}, {"player": "吳俊杰", "mode": "reject", "entries": [{"year": 2018, "team": "中信兄弟", "round": 8, "type": "季中選秀"}, {"year": 2019, "team": "味全龍", "round": 4, "type": "季中選秀"}], "latestYear": 2019, "latestTeam": "味全龍"}, {"player": "許賀捷", "mode": "reject", "entries": [{"year": 2024, "team": "樂天桃猿", "round": 9, "type": "季中選秀"}, {"year": 2025, "team": "樂天桃猿", "round": 2, "type": "季中選秀"}], "latestYear": 2025, "latestTeam": "樂天桃猿"}];
+// Self-training players (自主培訓選手): a bonus pool unlocked when a player's spins
+// land on the same year three times in one game session.
+const SELF_TRAINING_DATA = [{"year": 2012, "team": "Lamigo桃猿", "player": "黃中辰"}, {"year": 2012, "team": "Lamigo桃猿", "player": "單復昇"}, {"year": 2013, "team": "Lamigo桃猿", "player": "賴達官"}, {"year": 2013, "team": "統一獅", "player": "徐政斌"}, {"year": 2013, "team": "兄弟象", "player": "郭信甫"}, {"year": 2014, "team": "統一7-ELEVEn獅", "player": "鄭皓達"}, {"year": 2015, "team": "Lamigo桃猿", "player": "陽耀勳"}, {"year": 2015, "team": "Lamigo桃猿", "player": "林宗緯"}, {"year": 2016, "team": "義大犀牛", "player": "張瑞麟"}, {"year": 2016, "team": "義大犀牛", "player": "張進龍"}, {"year": 2016, "team": "Lamigo桃猿", "player": "游朝惟"}, {"year": 2017, "team": "Lamigo桃猿", "player": "潘耀傑"}, {"year": 2017, "team": "富邦悍將", "player": "游霆崴"}, {"year": 2018, "team": "統一7-ELEVEn獅", "player": "林祖傑"}, {"year": 2018, "team": "統一7-ELEVEn獅", "player": "施冠宇"}, {"year": 2018, "team": "中信兄弟", "player": "廖乙忠"}, {"year": 2018, "team": "中信兄弟", "player": "楊子亦"}, {"year": 2018, "team": "富邦悍將", "player": "張竣龍"}, {"year": 2018, "team": "Lamigo桃猿", "player": "林大展"}, {"year": 2019, "team": "味全龍", "player": "林桀晨"}, {"year": 2019, "team": "味全龍", "player": "王膺鵬"}, {"year": 2019, "team": "味全龍", "player": "曹維揚"}, {"year": 2019, "team": "中信兄弟", "player": "李聖裕"}, {"year": 2019, "team": "Lamigo桃猿", "player": "吳承運"}, {"year": 2020, "team": "富邦悍將", "player": "陳韋霖"}, {"year": 2020, "team": "富邦悍將", "player": "藍愷青"}, {"year": 2020, "team": "統一7-ELEVEn獅", "player": "張竣凱"}, {"year": 2020, "team": "中信兄弟", "player": "徐浩凱"}, {"year": 2020, "team": "味全龍", "player": "鄭兆男"}, {"year": 2020, "team": "樂天桃猿", "player": "林家鋒"}, {"year": 2020, "team": "樂天桃猿", "player": "劉家誠"}, {"year": 2021, "team": "統一7-ELEVEn獅", "player": "蔡鉦宇"}, {"year": 2021, "team": "樂天桃猿", "player": "藍震威"}, {"year": 2021, "team": "味全龍", "player": "張祐嘉"}, {"year": 2021, "team": "味全龍", "player": "李承風"}, {"year": 2021, "team": "中信兄弟", "player": "李榕津"}, {"year": 2021, "team": "中信兄弟", "player": "林瑞祥"}, {"year": 2021, "team": "富邦悍將", "player": "范姜永頡"}, {"year": 2021, "team": "富邦悍將", "player": "劉俊豪"}, {"year": 2021, "team": "富邦悍將", "player": "吳家洋"}, {"year": 2021, "team": "富邦悍將", "player": "温展樂"}, {"year": 2021, "team": "富邦悍將", "player": "陳冠勳"}, {"year": 2021, "team": "富邦悍將", "player": "蘇煒智"}, {"year": 2021, "team": "富邦悍將", "player": "蘇捷恩"}, {"year": 2022, "team": "富邦悍將", "player": "廖柏勳"}, {"year": 2022, "team": "台鋼雄鷹", "player": "黃勃睿"}, {"year": 2022, "team": "台鋼雄鷹", "player": "吳柏萱"}, {"year": 2022, "team": "台鋼雄鷹", "player": "顏郁軒"}, {"year": 2022, "team": "台鋼雄鷹", "player": "葉保弟"}, {"year": 2022, "team": "味全龍", "player": "林鋅杰"}, {"year": 2022, "team": "味全龍", "player": "李超"}, {"year": 2023, "team": "中信兄弟", "player": "林詩翔"}, {"year": 2023, "team": "中信兄弟", "player": "林逸翔"}, {"year": 2023, "team": "樂天桃猿", "player": "黃家諾"}, {"year": 2023, "team": "樂天桃猿", "player": "溫展樂"}, {"year": 2023, "team": "樂天桃猿", "player": "李重儀"}, {"year": 2023, "team": "樂天桃猿", "player": "劉子杰"}, {"year": 2023, "team": "富邦悍將", "player": "楊皓然"}, {"year": 2023, "team": "富邦悍將", "player": "爾曼羅索普"}, {"year": 2023, "team": "味全龍", "player": "王伯洋"}, {"year": 2023, "team": "台鋼雄鷹", "player": "湯家豪"}, {"year": 2024, "team": "中信兄弟", "player": "楊尊凱"}, {"year": 2024, "team": "中信兄弟", "player": "黃冠倫"}, {"year": 2024, "team": "中信兄弟", "player": "簡子寬"}, {"year": 2024, "team": "味全龍", "player": "陳柏安"}, {"year": 2025, "team": "樂天桃猿", "player": "張家豪"}, {"year": 2025, "team": "富邦悍將", "player": "李斯特"}, {"year": 2025, "team": "富邦悍將", "player": "楊笑虎"}, {"year": 2025, "team": "富邦悍將", "player": "蔡袁華辰"}, {"year": 2025, "team": "富邦悍將", "player": "童堉誠"}, {"year": 2025, "team": "味全龍", "player": "吳東霖"}, {"year": 2025, "team": "味全龍", "player": "潘信安"}, {"year": 2025, "team": "中信兄弟", "player": "吳瑞璁"}, {"year": 2025, "team": "中信兄弟", "player": "陳聖凱"}, {"year": 2025, "team": "中信兄弟", "player": "陳原維"}, {"year": 2026, "team": "統一7-ELEVEn獅", "player": "朱柏翰"}, {"year": 2026, "team": "統一7-ELEVEn獅", "player": "戴伯丞"}, {"year": 2026, "team": "樂天桃猿", "player": "莊孟源"}, {"year": 2026, "team": "樂天桃猿", "player": "陳昱安"}, {"year": 2026, "team": "中信兄弟", "player": "陳子傑"}, {"year": 2026, "team": "中信兄弟", "player": "黃冠倫"}, {"year": 2026, "team": "富邦悍將", "player": "黃宇昇"}, {"year": 2026, "team": "中信兄弟", "player": "盧彥祖"}, {"year": 2026, "team": "富邦悍將", "player": "許丞郡"}, {"year": 2026, "team": "味全龍", "player": "林品浩"}, {"year": 2026, "team": "台鋼雄鷹", "player": "林俊諺"}];
+const SELF_TRAINING_BY_YEAR = {};
+SELF_TRAINING_DATA.forEach(d => {
+  if(!SELF_TRAINING_BY_YEAR[d.year]) SELF_TRAINING_BY_YEAR[d.year] = [];
+  SELF_TRAINING_BY_YEAR[d.year].push(d);
+});
+// Confirmed same-person crossovers between a self-training entry and a real draft entry
+// (same year, same actual person) -> picking one locks the other.
+const TRAINING_CROSS_LOCK = new Set(['林詩翔']);
+
+const DUPLICATE_GROUPS = [{"player": "林恩宇", "mode": "special", "entries": [{"year": 2003, "team": "誠泰太陽", "round": 1, "type": "代訓選手選秀"}, {"year": 2009, "team": "兄弟象", "round": 1, "type": "一般選秀"}], "latestYear": 2009, "latestTeam": "兄弟象", "reason": "training"}, {"player": "曾兆豪", "mode": "special", "entries": [{"year": 2003, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "La New熊", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "周思齊", "mode": "special", "entries": [{"year": 2003, "team": "誠泰太陽", "round": 3, "type": "代訓選手選秀"}, {"year": 2008, "team": "兄弟象", "round": 3, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "朱尉銘", "mode": "special", "entries": [{"year": 2003, "team": "中信鯨", "round": 7, "type": "代訓選手選秀"}, {"year": 2008, "team": "統一獅", "round": 1, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "統一獅", "reason": "scandal"}, {"player": "林建宏", "mode": "reject", "entries": [{"year": 2022, "team": "台鋼雄鷹", "round": 22, "type": "季中選秀"}, {"year": 2025, "team": "台鋼雄鷹", "round": 4, "type": "季中選秀"}], "latestYear": 2025, "latestTeam": "台鋼雄鷹"}, {"player": "陳江和", "mode": "special", "entries": [{"year": 2004, "team": "中信鯨", "round": 2, "type": "代訓選手選秀(三)"}, {"year": 2006, "team": "兄弟象", "round": 1, "type": "新人選秀"}], "latestYear": 2006, "latestTeam": "兄弟象", "reason": "training"}, {"player": "黃浩然", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 2, "type": "代訓選手選秀(二)"}, {"year": 2008, "team": "La New熊", "round": 5, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "鄧蒔陽", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 1, "type": "季前新人選秀"}, {"year": 2008, "team": "興農牛", "round": 5, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "潘武雄", "mode": "reject", "entries": [{"year": 2004, "team": "興農牛", "round": 1, "type": "季前新人選秀"}, {"year": 2005, "team": "統一獅", "round": 2, "type": "新人選秀"}], "latestYear": 2005, "latestTeam": "統一獅"}, {"player": "沈鈺傑", "mode": "special", "entries": [{"year": 2004, "team": "誠泰COBRAS", "round": 2, "type": "季前新人選秀"}, {"year": 2004, "team": "中信鯨", "round": 1, "type": "季後新人選秀"}, {"year": 2008, "team": "興農牛", "round": 3, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "倪福德", "mode": "reject", "entries": [{"year": 2005, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "兄弟象", "round": 1, "type": "特別選秀"}, {"year": 2015, "team": "義大犀牛", "round": 2, "type": "季中選秀"}], "latestYear": 2015, "latestTeam": "義大犀牛"}, {"player": "陳致鵬", "mode": "special", "entries": [{"year": 2005, "team": "誠泰COBRAS", "round": 2, "type": "新人選秀"}, {"year": 2008, "team": "兄弟象", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "陳彥銘", "mode": "reject", "entries": [{"year": 2005, "team": "La New熊", "round": 14, "type": "新人選秀"}, {"year": 2006, "team": "興農牛", "round": 1, "type": "新人選秀"}], "latestYear": 2006, "latestTeam": "興農牛"}, {"player": "李義偉", "mode": "special", "entries": [{"year": 2006, "team": "中信鯨", "round": 1, "type": "代訓選手選秀"}, {"year": 2008, "team": "興農牛", "round": 4, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "黃宏任", "mode": "special", "entries": [{"year": 2006, "team": "中信鯨", "round": 3, "type": "代訓選手選秀"}, {"year": 2008, "team": "La New熊", "round": 2, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "紀榮家", "mode": "special", "entries": [{"year": 2006, "team": "La New熊", "round": 5, "type": "代訓選手選秀"}, {"year": 2011, "team": "興農牛", "round": 5, "type": "一般選秀"}], "latestYear": 2011, "latestTeam": "興農牛", "reason": "training"}, {"player": "詹智堯", "mode": "special", "entries": [{"year": 2007, "team": "誠泰COBRAS", "round": 1, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 1, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "唐嘉駿", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 1, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 6, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "La New熊", "reason": "scandal"}, {"player": "王泯皓", "mode": "special", "entries": [{"year": 2007, "team": "誠泰COBRAS", "round": 2, "type": "一般選秀"}, {"year": 2008, "team": "興農牛", "round": 6, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "興農牛", "reason": "scandal"}, {"player": "林瀚", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 2, "type": "一般選秀"}, {"year": 2008, "team": "統一獅", "round": 2, "type": "特別選秀"}], "latestYear": 2008, "latestTeam": "統一獅", "reason": "scandal"}, {"player": "張志豪", "mode": "special", "entries": [{"year": 2007, "team": "中信鯨", "round": 4, "type": "一般選秀"}, {"year": 2008, "team": "La New熊", "round": 3, "type": "特別選秀"}, {"year": 2009, "team": "兄弟象", "round": 2, "type": "一般選秀"}], "latestYear": 2009, "latestTeam": "兄弟象", "reason": "scandal"}, {"player": "黃伯楷", "mode": "reject", "entries": [{"year": 2009, "team": "興農牛", "round": 11, "type": "一般選秀"}, {"year": 2011, "team": "興農牛", "round": 6, "type": "一般選秀"}], "latestYear": 2011, "latestTeam": "興農牛"}, {"player": "王英山", "mode": "reject", "entries": [{"year": 2010, "team": "統一獅", "round": 3, "type": "一般選秀"}, {"year": 2012, "team": "兄弟象", "round": 3, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "兄弟象"}, {"player": "黃梓育", "mode": "reject", "entries": [{"year": 2010, "team": "La New熊", "round": 8, "type": "一般選秀"}, {"year": 2012, "team": "兄弟象", "round": 6, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "兄弟象"}, {"player": "吳培輝", "mode": "reject", "entries": [{"year": 2011, "team": "興農牛", "round": 4, "type": "一般選秀"}, {"year": 2012, "team": "Lamigo桃猿", "round": 8, "type": "一般選秀"}], "latestYear": 2012, "latestTeam": "Lamigo桃猿"}, {"player": "方玄宗", "mode": "reject", "entries": [{"year": 2012, "team": "兄弟象", "round": 5, "type": "一般選秀"}, {"year": 2013, "team": "義大犀牛", "round": 6, "type": "一般選秀"}], "latestYear": 2013, "latestTeam": "義大犀牛"}, {"player": "黃思漢", "mode": "reject", "entries": [{"year": 2013, "team": "兄弟象", "round": 7, "type": "一般選秀"}, {"year": 2014, "team": "義大犀牛", "round": 5, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "義大犀牛"}, {"player": "林樺慶", "mode": "reject", "entries": [{"year": 2013, "team": "義大犀牛", "round": 2, "type": "高中生選秀"}, {"year": 2014, "team": "Lamigo桃猿", "round": 2, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "Lamigo桃猿"}, {"player": "王朝民", "mode": "reject", "entries": [{"year": 2013, "team": "Lamigo桃猿", "round": 3, "type": "高中生選秀"}, {"year": 2014, "team": "統一7-ELEVEn獅", "round": 6, "type": "季中選秀"}], "latestYear": 2014, "latestTeam": "統一7-ELEVEn獅"}, {"player": "劉軒荅", "mode": "reject", "entries": [{"year": 2015, "team": "中信兄弟", "round": 11, "type": "季中選秀"}, {"year": 2018, "team": "統一7-ELEVEn獅", "round": 3, "type": "季中選秀"}], "latestYear": 2018, "latestTeam": "統一7-ELEVEn獅"}, {"player": "森榮鴻", "mode": "reject", "entries": [{"year": 2016, "team": "Lamigo桃猿", "round": 4, "type": "季中選秀"}, {"year": 2019, "team": "味全龍", "round": 6, "type": "季中選秀"}], "latestYear": 2019, "latestTeam": "味全龍"}, {"player": "吳蔚驊", "mode": "reject", "entries": [{"year": 2016, "team": "義大犀牛", "round": 6, "type": "季中選秀"}, {"year": 2017, "team": "中信兄弟", "round": 10, "type": "季中選秀"}], "latestYear": 2017, "latestTeam": "中信兄弟"}, {"player": "吳俊杰", "mode": "reject", "entries": [{"year": 2018, "team": "中信兄弟", "round": 8, "type": "季中選秀"}, {"year": 2019, "team": "味全龍", "round": 4, "type": "季中選秀"}], "latestYear": 2019, "latestTeam": "味全龍"}, {"player": "許賀捷", "mode": "reject", "entries": [{"year": 2024, "team": "樂天桃猿", "round": 9, "type": "季中選秀"}, {"year": 2025, "team": "樂天桃猿", "round": 2, "type": "季中選秀"}], "latestYear": 2025, "latestTeam": "樂天桃猿"}];
 const DUPLICATE_INFO = {}; // player -> {mode, entries, latestYear, latestTeam}
 DUPLICATE_GROUPS.forEach(g => { DUPLICATE_INFO[g.player] = g; });
 function entryKey(team, year){ return team + '||' + year; }
@@ -847,6 +911,12 @@ let gameStarted = false;
 let passesUsed = 0;
 let bonusPasses = 0; // extra passes granted for "only candidate is a banned player" combos
 const bonusGrantedFor = new Set();
+
+// Self-training bonus tracking
+const yearSpinCounts = {}; // year -> number of times spun to in this session
+const trainingUsedYears = new Set(); // years whose self-training pick has already been used up
+let trainingAvailableYear = null; // year currently offering an unclaimed self-training pick
+let stSelectedPlayer = null;
 let selectedPlayer = null; // {combo, pick}
 
 const yearMinSel = document.getElementById('yearMin');
@@ -954,6 +1024,16 @@ function spin(){
       updateFilterLock();
       updateSpinButton();
       showResult(finalCombo);
+
+      // Track same-year spins; unlock self-training bonus at exactly 3 hits on a year.
+      const y = finalCombo.year;
+      yearSpinCounts[y] = (yearSpinCounts[y] || 0) + 1;
+      if(yearSpinCounts[y] === 3 && !trainingUsedYears.has(y) && SELF_TRAINING_BY_YEAR[y]){
+        trainingAvailableYear = y;
+        const banner = document.getElementById('trainingBanner');
+        document.getElementById('trainingBannerText').textContent = `🎓 本局已轉到 ${y} 年三次！解鎖該年度自主培訓選手名單`;
+        banner.style.display = 'flex';
+      }
     }
   }
   tick();
@@ -1000,7 +1080,15 @@ function renderCandTable(combo){
     let dupDisabled = false;
     let dupTag = '';
 
-    if(dup && !banned){
+    if(TRAINING_CROSS_LOCK.has(p.player) && !banned){
+      const takenViaTraining = roster.find(r => r.player === p.player && r.round === '自主培訓');
+      if(takenViaTraining){
+        dupDisabled = true;
+        dupTag = `🔁 此人已透過自主培訓選走（${takenViaTraining.year}年 ${takenViaTraining.team}）`;
+      }
+    }
+
+    if(dup && !banned && !dupDisabled){
       if(dup.mode === 'reject'){
         const isLatest = (combo.team === dup.latestTeam && combo.year === dup.latestYear);
         if(!isLatest){
@@ -1181,6 +1269,142 @@ passBtn.addEventListener('click', ()=>{
   statusLine.innerHTML = `已使用 1 次 PASS（剩餘 ${getPassesLeft()} 次）。請再次轉動輪盤。`;
 });
 
+// --- Self-training bonus panel ---
+document.getElementById('openTrainingBtn').addEventListener('click', ()=>{
+  if(trainingAvailableYear == null) return;
+  document.getElementById('trainingBanner').style.display = 'none';
+  openTrainingPanel(trainingAvailableYear);
+});
+
+function openTrainingPanel(year){
+  const panel = document.getElementById('selfTrainingPanel');
+  document.getElementById('selfTrainingPanelTitle').textContent = `${year}年 自主培訓選手`;
+  stSelectedPlayer = null;
+  renderTrainingTable(year);
+  renderStAssignBar();
+  panel.style.display = 'block';
+  if(typeof panel.scrollIntoView === 'function'){ panel.scrollIntoView({behavior:'smooth', block:'start'}); }
+}
+
+function renderTrainingTable(year){
+  const list = SELF_TRAINING_BY_YEAR[year] || [];
+  const tbody = document.getElementById('trainingTableBody');
+  tbody.innerHTML = '';
+  list.forEach(p=>{
+    const alreadyIn = roster.some(r => r.player === p.player);
+    let crossDisabled = false, crossTag = '';
+    if(TRAINING_CROSS_LOCK.has(p.player)){
+      const takenViaDraft = roster.find(r => r.player === p.player && r.round !== '自主培訓');
+      if(takenViaDraft){
+        crossDisabled = true;
+        crossTag = `🔁 此人已透過正式選秀選走（${takenViaDraft.year}年 ${takenViaDraft.team}）`;
+      }
+    }
+    const disabled = alreadyIn || crossDisabled;
+    const tr = document.createElement('tr');
+    if(disabled) tr.classList.add('dup-disabled-row');
+    if(stSelectedPlayer && stSelectedPlayer.pick === p) tr.classList.add('selected');
+    tr.innerHTML = `
+      <td>${p.team}</td>
+      <td>${p.player}${crossTag ? `<div class="dup-tag dup-tag-blocked">${crossTag}</div>` : ''}</td>
+      <td><button class="pick-btn" ${disabled?'disabled':''}>${alreadyIn ? '已加入過' : (crossDisabled ? '🚫 已鎖定' : '選擇')}</button></td>
+    `;
+    tr.querySelector('button').addEventListener('click', ()=>{
+      if(disabled) return;
+      stSelectedPlayer = { combo: { team:p.team, year:p.year, key:'self-training-'+p.year }, pick: { player:p.player, round:'自主培訓', pick:0, type:'自主培訓' } };
+      renderTrainingTable(year);
+      renderStAssignBar();
+    });
+    tbody.appendChild(tr);
+  });
+}
+
+function renderStAssignBar(){
+  const pickedName = document.getElementById('stPickedName');
+  const roleSel = document.getElementById('stRoleSelect');
+  const orderSel = document.getElementById('stOrderSelect');
+  const addBtnEl = document.getElementById('stAddBtn');
+
+  if(!stSelectedPlayer){
+    pickedName.textContent = '— 請先在上方名冊點選一位 —';
+    roleSel.innerHTML = '<option value="">請先選擇球員</option>';
+    roleSel.disabled = true;
+    orderSel.innerHTML = '<option value="">—</option>';
+    orderSel.disabled = true;
+    addBtnEl.disabled = true;
+    return;
+  }
+
+  pickedName.textContent = `${stSelectedPlayer.pick.player}（${stSelectedPlayer.combo.team} ${stSelectedPlayer.combo.year}年 自主培訓）`;
+  roleSel.disabled = false;
+
+  const usedPositions = getUsedPositions();
+  let optsHtml = '<option value="">選擇角色</option><optgroup label="先發打線（守備位置）">';
+  FIELD_POSITIONS.forEach(p=>{
+    optsHtml += `<option value="order:${p}" ${usedPositions.has(p)?'disabled':''}>${p}${usedPositions.has(p)?'（已使用）':''}</option>`;
+  });
+  optsHtml += '</optgroup><optgroup label="投手 / 替補">';
+  ['bench','sp','mid','closer'].forEach(k=>{
+    const g = groupInfo(k);
+    const full = isGroupFull(k);
+    optsHtml += `<option value="${k}" ${full?'disabled':''}>${g.title}（${getGroupUsedCount(k)}/${g.count}）${full?' 已滿':''}</option>`;
+  });
+  optsHtml += '</optgroup>';
+  roleSel.innerHTML = optsHtml;
+
+  function updateOrderVisibility(){
+    const val = roleSel.value;
+    if(val.startsWith('order:')){
+      const usedOrders = getUsedOrders();
+      orderSel.disabled = false;
+      orderSel.innerHTML = '<option value="">選擇棒次</option>' +
+        Array.from({length:9},(_,i)=>i+1).filter(n=>!usedOrders.has(n)).map(n=>`<option value="${n}">${n}棒</option>`).join('');
+    } else {
+      orderSel.disabled = true;
+      orderSel.innerHTML = '<option value="">不需要棒次</option>';
+    }
+    updateConfirm();
+  }
+  function updateConfirm(){
+    const val = roleSel.value;
+    if(!val){ addBtnEl.disabled = true; return; }
+    addBtnEl.disabled = val.startsWith('order:') ? !orderSel.value : (isTeamFull());
+  }
+  roleSel.onchange = updateOrderVisibility;
+  orderSel.onchange = updateConfirm;
+  updateOrderVisibility();
+}
+
+document.getElementById('stAddBtn').addEventListener('click', ()=>{
+  if(!stSelectedPlayer || document.getElementById('stAddBtn').disabled || isTeamFull()) return;
+  const {combo, pick} = stSelectedPlayer;
+  const val = document.getElementById('stRoleSelect').value;
+  let entry;
+  if(val.startsWith('order:')){
+    const position = val.split(':')[1];
+    const orderNum = parseInt(document.getElementById('stOrderSelect').value);
+    entry = { team:combo.team, year:combo.year, player:pick.player, round:pick.round, pick:pick.pick, slotGroup:'order', slotIndex:0, orderNum, position };
+  } else {
+    const groupKey = val;
+    const slotIndex = getGroupUsedCount(groupKey);
+    entry = { team:combo.team, year:combo.year, player:pick.player, round:pick.round, pick:pick.pick, slotGroup:groupKey, slotIndex, orderNum:null, position:null };
+  }
+  roster.push(entry);
+  history.unshift({team:combo.team, year:combo.year, player:pick.player+'（自主培訓）'});
+  trainingUsedYears.add(combo.year);
+  trainingAvailableYear = null;
+  stSelectedPlayer = null;
+  renderRoster();
+  renderHistory();
+  document.getElementById('selfTrainingPanel').style.display = 'none';
+  const roleText = val.startsWith('order:') ? `${entry.orderNum}棒／${entry.position}` : groupInfo(val).title;
+  statusLine.innerHTML = `<b>${pick.player}</b>（${combo.team} ${combo.year}年 自主培訓 · ${roleText}）已加入球隊！`;
+});
+
+document.getElementById('stCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('selfTrainingPanel').style.display = 'none';
+});
+
 function renderRoster(){
   document.getElementById('rosterCount').textContent = roster.length;
   document.getElementById('progressFill').style.width = (roster.length / ROSTER_MAX * 100) + '%';
@@ -1274,6 +1498,12 @@ function resetAll(){
   bonusPasses = 0;
   bonusGrantedFor.clear();
   selectedPlayer = null;
+  Object.keys(yearSpinCounts).forEach(k => delete yearSpinCounts[k]);
+  trainingUsedYears.clear();
+  trainingAvailableYear = null;
+  stSelectedPlayer = null;
+  document.getElementById('trainingBanner').style.display = 'none';
+  document.getElementById('selfTrainingPanel').style.display = 'none';
   updateFilterLock();
   updateSpinButton();
   renderRoster();
@@ -1501,6 +1731,16 @@ renderHistory();
 
 // --- Changelog / update notice ---
 const CHANGELOG = [
+  {
+    version: '26.04',
+    date: '2026-08',
+    notes: [
+      '修正林恩宇（2003代訓選手選秀 vs 2009一般選秀）重複入選，比照代訓規則處理',
+      '禁賽名單新增黃俊中（假球案）',
+      '新增「自主培訓選手」玩法：本局轉盤轉到同一年度三次，即可解鎖該年度自主培訓名單，額外挑一位加入球隊',
+      '處理自主培訓與正式選秀撞名（林詩翔），僅能擇一選入',
+    ],
+  },
   {
     version: '26.02',
     date: '2026-08',
